@@ -1,0 +1,411 @@
+/* ============================================
+   ZENDOTECH FOOTER BUILDER — ADMIN STYLES
+   ============================================ */
+
+.zfb-wrap {
+    max-width: 900px;
+    margin: 20px auto 40px;
+}
+
+/* Header */
+.zfb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    background: linear-gradient(135deg, #3B3B98, #5252B8);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    color: #fff;
+}
+
+.zfb-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 6px;
+}
+
+.zfb-header h1 .dashicons {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.zfb-header p {
+    margin: 0;
+    opacity: .8;
+    font-size: 14px;
+}
+
+.zfb-theme-badge {
+    background: rgba(255, 255, 255, .15);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, .2);
+}
+
+/* Notice */
+.zfb-notice {
+    border-radius: 8px !important;
+    border-left-width: 4px !important;
+}
+
+/* Tabs */
+.zfb-tabs {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 6px;
+    border-radius: 10px;
+    margin-bottom: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    border: 1px solid #e0e2e8;
+}
+
+.zfb-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+
+.zfb-tab:hover {
+    background: #f4f5f7;
+    color: #3B3B98;
+}
+
+.zfb-tab.active {
+    background: #3B3B98;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(59, 59, 152, .3);
+}
+
+.zfb-tab .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Panels */
+.zfb-panel {
+    display: none;
+    background: #fff;
+    border: 1px solid #e0e2e8;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.zfb-panel.active {
+    display: block;
+}
+
+.zfb-panel-header {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e8e8f0;
+}
+
+.zfb-panel-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #121218;
+    margin: 0 0 6px;
+}
+
+.zfb-panel-header p {
+    font-size: 13px;
+    color: #8e8ea0;
+    margin: 0;
+}
+
+/* Section Card */
+.zfb-section-card {
+    background: #f9f9fc;
+    border: 1px solid #e0e2e8;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.zfb-section-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #3B3B98;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.zfb-section-card h3 .dashicons {
+    color: #3B3B98;
+}
+
+/* Fields */
+.zfb-field {
+    margin-bottom: 20px;
+}
+
+.zfb-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.zfb-hint {
+    font-weight: 400;
+    color: #8e8ea0;
+    font-size: 12px;
+}
+
+.zfb-field input[type="text"],
+.zfb-field input[type="url"],
+.zfb-field input[type="email"],
+.zfb-field textarea,
+.zfb-field select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d0d2d8;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #333;
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.zfb-field input:focus,
+.zfb-field textarea:focus,
+.zfb-field select:focus {
+    outline: none;
+    border-color: #3B3B98;
+    box-shadow: 0 0 0 3px rgba(59, 59, 152, .1);
+}
+
+.zfb-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.zfb-help {
+    font-size: 12px;
+    color: #8e8ea0;
+    margin-top: 6px;
+}
+
+/* Toggle Switch */
+.zfb-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.zfb-toggle-label input {
+    display: none;
+}
+
+.zfb-toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    position: relative;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+
+.zfb-toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+.zfb-toggle-label input:checked+.zfb-toggle-switch {
+    background: #3B3B98;
+}
+
+.zfb-toggle-label input:checked+.zfb-toggle-switch::after {
+    transform: translateX(20px);
+}
+
+/* Repeater */
+.zfb-repeater {
+    margin-bottom: 12px;
+}
+
+.zfb-repeater-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #e0e2e8;
+    border-radius: 8px;
+    transition: box-shadow .2s;
+}
+
+.zfb-repeater-row:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+}
+
+.zfb-repeater-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d0d2d8;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.zfb-repeater-row input:focus {
+    outline: none;
+    border-color: #3B3B98;
+    box-shadow: 0 0 0 2px rgba(59, 59, 152, .1);
+}
+
+.zfb-icon-preview {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f5;
+    border-radius: 8px;
+    font-size: 18px;
+    color: #3B3B98;
+    flex-shrink: 0;
+}
+
+.zfb-remove-row {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: #cc3333;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+
+.zfb-remove-row:hover {
+    background: #fde8e8;
+}
+
+/* Help Box */
+.zfb-help-box {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: #f0f0fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0f0;
+    font-size: 12px;
+    color: #555;
+    line-height: 2.2;
+}
+
+.zfb-help-box strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.zfb-help-box code {
+    background: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 11px;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+
+/* Save Bar */
+.zfb-save-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid #e0e2e8;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+}
+
+.zfb-save-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    background: #3B3B98 !important;
+    border-color: #3B3B98 !important;
+}
+
+.zfb-save-btn:hover {
+    background: #2D2D7A !important;
+    border-color: #2D2D7A !important;
+}
+
+.zfb-reset-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    color: #888 !important;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .zfb-tabs {
+        flex-wrap: wrap;
+    }
+
+    .zfb-tab {
+        flex: auto;
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+
+    .zfb-field-row {
+        grid-template-columns: 1fr;
+    }
+
+    .zfb-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+}
