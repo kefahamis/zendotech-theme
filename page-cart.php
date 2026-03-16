@@ -46,7 +46,7 @@ wp_enqueue_style('zendotech-cart-style', get_template_directory_uri() . '/assets
             <div class="feat-item">
                 <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
-                    <h4>2-Year Warranty</h4>
+                    <h4>1-Year Warranty</h4>
                     <p>On all audio products</p>
                 </div>
             </div>

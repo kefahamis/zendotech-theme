@@ -345,7 +345,7 @@ do_action('woocommerce_before_cart');
             <div class="feat-item">
                 <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
-                    <h4>2-Year Warranty</h4>
+                    <h4>1-Year Warranty</h4>
                     <p>On all audio products</p>
                 </div>
             </div>
