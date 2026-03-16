@@ -57,6 +57,11 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 			'type'    => \Elementor\Controls_Manager::MEDIA,
 			'default' => [ 'url' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&h=400&fit=crop' ],
 		] );
+		$repeater->add_control( 'slide_bg_image', [
+			'label'   => __( 'Background Image', 'zendotech' ),
+			'type'    => \Elementor\Controls_Manager::MEDIA,
+			'default' => [ 'url' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&h=800&fit=crop' ],
+		] );
 		$repeater->add_control( 'slide_bg_color', [
 			'label'       => __( 'Background Color', 'zendotech' ),
 			'type'        => \Elementor\Controls_Manager::COLOR,
@@ -76,6 +81,7 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 					'slide_price'    => 'From $348',
 					'slide_btn_text' => 'Shop Now',
 					'slide_image'    => [ 'url' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&h=400&fit=crop' ],
+					'slide_bg_image' => [ 'url' => 'https://images.unsplash.com/photo-1470309864661-68328b2cd0a5?w=1200&h=600&fit=crop' ],
 				],
 				[
 					'slide_title'    => 'Marshall Stanmore III',
@@ -84,6 +90,7 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 					'slide_price'    => 'From $379',
 					'slide_btn_text' => 'Shop Now',
 					'slide_image'    => [ 'url' => 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&h=400&fit=crop' ],
+					'slide_bg_image' => [ 'url' => 'https://images.unsplash.com/photo-1455792233700-18cfce9c5c17?w=1200&h=600&fit=crop' ],
 				],
 				[
 					'slide_title'    => 'Bose QuietComfort Ultra',
@@ -92,6 +99,7 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 					'slide_price'    => 'From $349',
 					'slide_btn_text' => 'Shop Now',
 					'slide_image'    => [ 'url' => 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&h=400&fit=crop' ],
+					'slide_bg_image' => [ 'url' => 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=600&fit=crop' ],
 				],
 			],
 			'title_field' => '{{{ slide_title }}}',
@@ -349,6 +357,7 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 										'url'      => ! empty( $ms['slide_btn_url']['url'] ) ? $ms['slide_btn_url']['url'] : '#',
 										'img'      => ! empty( $ms['slide_image']['url'] ) ? $ms['slide_image']['url'] : 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500&h=400&fit=crop',
 										'bg_color' => $ms['slide_bg_color'] ?? '',
+										'bg_img'   => ! empty( $ms['slide_bg_image']['url'] ) ? $ms['slide_bg_image']['url'] : '',
 									];
 								}
 							}
@@ -358,7 +367,17 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 								foreach ( $slides_data as $sd ) :
 									$idx++;
 									$bg_class = 'bg-variant-' . ( ( $idx % 3 ) + 1 );
-									$bg_style = ! empty( $sd['bg_color'] ) ? 'background:' . esc_attr( $sd['bg_color'] ) . ' !important;' : '';
+									$bg_styles = [];
+									if ( ! empty( $sd['bg_color'] ) ) {
+										$bg_styles[] = 'background:' . esc_attr( $sd['bg_color'] ) . ' !important';
+									}
+									if ( ! empty( $sd['bg_img'] ) ) {
+										$bg_styles[] = 'background-image:url(' . esc_url( $sd['bg_img'] ) . ')';
+										$bg_styles[] = 'background-size:cover';
+										$bg_styles[] = 'background-repeat:no-repeat';
+										$bg_styles[] = 'background-position:center';
+									}
+									$bg_style = $bg_styles ? implode( ';', $bg_styles ) . ';' : '';
 									?>
 									<div class="swiper-slide">
 										<div class="banner-bg <?php echo esc_attr( $bg_class ); ?>"<?php if ( $bg_style ) echo ' style="' . $bg_style . '"'; ?>>

@@ -9,8 +9,8 @@ if (!defined('ABSPATH')) {
 }
 
 /* ============================================
-   1. THEME SETUP
-   ============================================ */
+ 1. THEME SETUP
+ ============================================ */
 function zendotech_theme_setup()
 {
     add_theme_support('automatic-feed-links');
@@ -53,8 +53,8 @@ function zendotech_theme_setup()
 add_action('after_setup_theme', 'zendotech_theme_setup');
 
 /* ============================================
-   2. ENQUEUE SCRIPTS & STYLES
-   ============================================ */
+ 2. ENQUEUE SCRIPTS & STYLES
+ ============================================ */
 function zendotech_enqueue_scripts()
 {
     // Google Fonts
@@ -124,7 +124,7 @@ function zendotech_enqueue_scripts()
 
     wp_localize_script('zendotech-app-js', 'zendotechData', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),
-        'wcAjaxUrl' => class_exists('WC_AJAX') ? WC_AJAX::get_endpoint('%%endpoint%%') : '',
+        'wcAjaxUrl' => class_exists('WC_AJAX') ?WC_AJAX::get_endpoint('%%endpoint%%') : '',
         'shopUrl' => function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : home_url('/shop/'),
         'cartUrl' => function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/'),
         'checkoutUrl' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/checkout/'),
@@ -136,9 +136,9 @@ function zendotech_enqueue_scripts()
 add_action('wp_enqueue_scripts', 'zendotech_enqueue_scripts');
 
 /* ============================================
-   2B. AJAX ADD-TO-CART HANDLER
-   Bridges the JS mini-cart with WooCommerce
-   ============================================ */
+ 2B. AJAX ADD-TO-CART HANDLER
+ Bridges the JS mini-cart with WooCommerce
+ ============================================ */
 function zendotech_ajax_add_to_cart()
 {
     // Prefer nonce; if missing/expired (e.g. cached page or guest), allow when request looks same-site + valid product
@@ -174,9 +174,11 @@ function zendotech_ajax_add_to_cart()
     $product_id = 0;
     if (isset($_POST['product_id']) && is_numeric($_POST['product_id'])) {
         $product_id = absint($_POST['product_id']);
-    } elseif (isset($_POST['add-to-cart']) && is_numeric($_POST['add-to-cart'])) {
+    }
+    elseif (isset($_POST['add-to-cart']) && is_numeric($_POST['add-to-cart'])) {
         $product_id = absint($_POST['add-to-cart']);
-    } elseif (isset($_REQUEST['product_id']) && is_numeric($_REQUEST['product_id'])) {
+    }
+    elseif (isset($_REQUEST['product_id']) && is_numeric($_REQUEST['product_id'])) {
         $product_id = absint($_REQUEST['product_id']);
     }
     $quantity = isset($_POST['quantity']) ? absint($_POST['quantity']) : 1;
@@ -205,7 +207,8 @@ function zendotech_ajax_add_to_cart()
 
     if ($variation_id) {
         $added = WC()->cart->add_to_cart($product_id, $quantity, $variation_id, $variations);
-    } else {
+    }
+    else {
         $added = WC()->cart->add_to_cart($product_id, $quantity);
     }
 
@@ -253,10 +256,11 @@ function zendotech_get_cart()
     $items = array();
     foreach ($cart as $cart_item_key => $cart_item) {
         $product = wc_get_product($cart_item['product_id']);
-        if (!$product) continue;
+        if (!$product)
+            continue;
         $image = get_the_post_thumbnail_url($product->get_id(), 'thumbnail') ?: wc_placeholder_img_src();
         $items[] = array(
-            'id' => (string) $product->get_id(),
+            'id' => (string)$product->get_id(),
             'key' => $cart_item_key,
             'name' => $product->get_name(),
             'price' => wc_get_price_to_display($product),
@@ -292,14 +296,14 @@ add_action('rest_api_init', function () {
         'methods' => 'GET',
         'callback' => function () {
             return rest_ensure_response(array('probe' => true, 'time' => current_time('mysql')));
-        },
-        'permission_callback' => '__return_true'
-    ));
-});
+        }
+            ,
+            'permission_callback' => '__return_true'
+        ));    });
 
 /* ============================================
-   3. WOOCOMMERCE WRAPPER
-   ============================================ */
+ 3. WOOCOMMERCE WRAPPER
+ ============================================ */
 function zendotech_woocommerce_wrapper_before()
 {
     echo '<main id="primary" class="site-main"><div class="container">';
@@ -317,8 +321,8 @@ add_action('woocommerce_after_main_content', 'zendotech_woocommerce_wrapper_afte
 remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
 
 /* ============================================
-   4. HELPER: CUSTOM LOGO OR FALLBACK
-   ============================================ */
+ 4. HELPER: CUSTOM LOGO OR FALLBACK
+ ============================================ */
 function zendotech_the_logo($class = 'logo')
 {
     $home = esc_url(home_url('/'));
@@ -329,7 +333,8 @@ function zendotech_the_logo($class = 'logo')
         echo '<img src="' . esc_url($logo_url) . '" alt="' . get_bloginfo('name') . '" class="logo-img">';
         echo '<span class="logo-text">' . get_bloginfo('name') . '</span>';
         echo '</a>';
-    } else {
+    }
+    else {
         echo '<a href="' . $home . '" class="' . esc_attr($class) . '">';
         echo '<span class="logo-text">' . get_bloginfo('name') . '</span>';
         echo '</a>';
@@ -337,8 +342,8 @@ function zendotech_the_logo($class = 'logo')
 }
 
 /* ============================================
-   5. HELPER: PRODUCT CARD HTML
-   ============================================ */
+ 5. HELPER: PRODUCT CARD HTML
+ ============================================ */
 function zendotech_product_card($product)
 {
     if (!$product || !is_a($product, 'WC_Product'))
@@ -363,14 +368,16 @@ function zendotech_product_card($product)
         $pct = round((($product->get_regular_price() - $product->get_sale_price()) / $product->get_regular_price()) * 100);
         $sale_pct = '-' . $pct . '%';
     }
-    ?>
+?>
     <div class="product-card" data-product-id="<?php echo esc_attr($id); ?>">
         <div class="pc-img">
             <?php if ($on_sale && $sale_pct): ?>
                 <span class="sale-tag"><?php echo esc_html($sale_pct); ?></span>
-            <?php elseif ($is_new): ?>
+            <?php
+    elseif ($is_new): ?>
                 <span class="new-tag">New</span>
-            <?php endif; ?>
+            <?php
+    endif; ?>
             <a href="<?php echo esc_url($permalink); ?>">
                 <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($name); ?>">
             </a>
@@ -387,19 +394,20 @@ function zendotech_product_card($product)
             <?php if ($rating > 0): ?>
                 <div class="pc-stars">
                     <?php
-                    $full = floor($rating);
-                    $half = ($rating - $full >= 0.25) ? 1 : 0;
-                    $empty = 5 - $full - $half;
-                    for ($i = 0; $i < $full; $i++)
-                        echo '<i class="fa-solid fa-star"></i>';
-                    if ($half)
-                        echo '<i class="fa-solid fa-star-half-stroke"></i>';
-                    for ($i = 0; $i < $empty; $i++)
-                        echo '<i class="fa-regular fa-star"></i>';
-                    ?>
+        $full = floor($rating);
+        $half = ($rating - $full >= 0.25) ? 1 : 0;
+        $empty = 5 - $full - $half;
+        for ($i = 0; $i < $full; $i++)
+            echo '<i class="fa-solid fa-star"></i>';
+        if ($half)
+            echo '<i class="fa-solid fa-star-half-stroke"></i>';
+        for ($i = 0; $i < $empty; $i++)
+            echo '<i class="fa-regular fa-star"></i>';
+?>
                     <span>(<?php echo esc_html($review_count); ?>)</span>
                 </div>
-            <?php endif; ?>
+            <?php
+    endif; ?>
             <div class="pc-pricing"><?php echo $price_html; ?></div>
             <a href="<?php echo esc_url($product->add_to_cart_url()); ?>"
                 class="atc-btn add_to_cart_button ajax_add_to_cart product_type_simple"
@@ -414,8 +422,8 @@ function zendotech_product_card($product)
 }
 
 /* ============================================
-   6. PRODUCT & CATEGORY IMPORT ON ACTIVATION
-   ============================================ */
+ 6. PRODUCT & CATEGORY IMPORT ON ACTIVATION
+ ============================================ */
 function zendotech_import_products()
 {
     if (!function_exists('WC') || !class_exists('WC_Product_Simple'))
@@ -442,7 +450,8 @@ function zendotech_import_products()
         $existing = term_exists($slug, 'product_cat');
         if ($existing) {
             $cat_ids[$slug] = $existing['term_id'];
-        } else {
+        }
+        else {
             $result = wp_insert_term($name, 'product_cat', array('slug' => $slug));
             if (!is_wp_error($result)) {
                 $cat_ids[$slug] = $result['term_id'];
@@ -453,34 +462,34 @@ function zendotech_import_products()
     // ---- ALL PRODUCTS FROM index.html ----
     $products = array(
         // === DEALS OF THE DAY ===
-        array('name' => 'Beyerdynamic DT 900 Pro X Studio', 'price' => '209', 'sale' => '299', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=600&h=600&fit=crop', 'desc' => 'Open-back studio headphones with STELLAR.45 driver for accurate studio sound.', 'rating' => 4.5, 'reviews' => 142),
-        array('name' => 'JBL Flip 6 Portable Bluetooth Speaker', 'price' => '129', 'cat' => 'speakers', 'img' => 'https://images.unsplash.com/photo-1558537348-c0f8e733989d?w=600&h=600&fit=crop', 'desc' => 'Bold sound, deep bass, IP67 waterproof and dustproof portable speaker.', 'rating' => 5.0, 'reviews' => 287),
-        array('name' => 'Blue Yeti X USB Condenser Mic', 'price' => '149', 'cat' => 'microphones', 'img' => 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&h=600&fit=crop', 'desc' => 'Professional USB condenser microphone for streaming, podcasting, and recording.', 'rating' => 4.0, 'reviews' => 198),
-        array('name' => 'Fender Player Stratocaster Electric', 'price' => '679', 'sale' => '799', 'cat' => 'guitars', 'img' => 'https://images.unsplash.com/photo-1550291652-6ea9114a47b1?w=600&h=600&fit=crop', 'desc' => 'Classic Stratocaster tone with modern playability and alder body.', 'rating' => 5.0, 'reviews' => 76),
-        array('name' => 'Audio-Technica AT-LP120X Direct-Drive', 'price' => '249', 'cat' => 'turntables', 'img' => 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop', 'desc' => 'Fully manual direct-drive turntable with USB output for digitizing records.', 'rating' => 4.5, 'reviews' => 112),
+            array('name' => 'Beyerdynamic DT 900 Pro X Studio', 'price' => '209', 'sale' => '299', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=600&h=600&fit=crop', 'desc' => 'Open-back studio headphones with STELLAR.45 driver for accurate studio sound.', 'rating' => 4.5, 'reviews' => 142),
+            array('name' => 'JBL Flip 6 Portable Bluetooth Speaker', 'price' => '129', 'cat' => 'speakers', 'img' => 'https://images.unsplash.com/photo-1558537348-c0f8e733989d?w=600&h=600&fit=crop', 'desc' => 'Bold sound, deep bass, IP67 waterproof and dustproof portable speaker.', 'rating' => 5.0, 'reviews' => 287),
+            array('name' => 'Blue Yeti X USB Condenser Mic', 'price' => '149', 'cat' => 'microphones', 'img' => 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&h=600&fit=crop', 'desc' => 'Professional USB condenser microphone for streaming, podcasting, and recording.', 'rating' => 4.0, 'reviews' => 198),
+            array('name' => 'Fender Player Stratocaster Electric', 'price' => '679', 'sale' => '799', 'cat' => 'guitars', 'img' => 'https://images.unsplash.com/photo-1550291652-6ea9114a47b1?w=600&h=600&fit=crop', 'desc' => 'Classic Stratocaster tone with modern playability and alder body.', 'rating' => 5.0, 'reviews' => 76),
+            array('name' => 'Audio-Technica AT-LP120X Direct-Drive', 'price' => '249', 'cat' => 'turntables', 'img' => 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop', 'desc' => 'Fully manual direct-drive turntable with USB output for digitizing records.', 'rating' => 4.5, 'reviews' => 112),
 
         // === POPULAR PRODUCTS ===
-        array('name' => 'Apple AirPods Pro (2nd Gen) USB-C', 'price' => '249', 'cat' => 'earbuds', 'img' => 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600&h=600&fit=crop', 'desc' => 'Active noise cancellation with adaptive transparency and personalized spatial audio.', 'rating' => 4.5, 'reviews' => 312),
-        array('name' => 'Taylor 214ce Acoustic-Electric Guitar', 'price' => '1099', 'sale' => '1249', 'cat' => 'guitars', 'img' => 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&h=600&fit=crop', 'desc' => 'Grand Auditorium body with Sitka spruce top and ES2 electronics.', 'rating' => 5.0, 'reviews' => 64),
-        array('name' => 'Sonos Arc Premium Dolby Atmos', 'price' => '899', 'cat' => 'soundbars', 'img' => 'https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&h=600&fit=crop', 'desc' => 'Premium smart soundbar with Dolby Atmos, Trueplay tuning and voice control.', 'rating' => 4.0, 'reviews' => 89),
-        array('name' => 'Akai MPK Mini MK3 MIDI Controller', 'price' => '119', 'cat' => 'studio-gear', 'img' => 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&h=600&fit=crop', 'desc' => '25-key USB MIDI keyboard controller with MPC drum pads and joystick.', 'rating' => 5.0, 'reviews' => 245),
-        array('name' => 'Yamaha HS5 Powered Studio Monitor', 'price' => '199', 'cat' => 'monitors', 'img' => 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop', 'desc' => '5-inch 2-way bass-reflex bi-amplified nearfield studio monitor with flat response.', 'rating' => 4.5, 'reviews' => 167),
+            array('name' => 'Apple AirPods Pro (2nd Gen) USB-C', 'price' => '249', 'cat' => 'earbuds', 'img' => 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600&h=600&fit=crop', 'desc' => 'Active noise cancellation with adaptive transparency and personalized spatial audio.', 'rating' => 4.5, 'reviews' => 312),
+            array('name' => 'Taylor 214ce Acoustic-Electric Guitar', 'price' => '1099', 'sale' => '1249', 'cat' => 'guitars', 'img' => 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=600&h=600&fit=crop', 'desc' => 'Grand Auditorium body with Sitka spruce top and ES2 electronics.', 'rating' => 5.0, 'reviews' => 64),
+            array('name' => 'Sonos Arc Premium Dolby Atmos', 'price' => '899', 'cat' => 'soundbars', 'img' => 'https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&h=600&fit=crop', 'desc' => 'Premium smart soundbar with Dolby Atmos, Trueplay tuning and voice control.', 'rating' => 4.0, 'reviews' => 89),
+            array('name' => 'Akai MPK Mini MK3 MIDI Controller', 'price' => '119', 'cat' => 'studio-gear', 'img' => 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&h=600&fit=crop', 'desc' => '25-key USB MIDI keyboard controller with MPC drum pads and joystick.', 'rating' => 5.0, 'reviews' => 245),
+            array('name' => 'Yamaha HS5 Powered Studio Monitor', 'price' => '199', 'cat' => 'monitors', 'img' => 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop', 'desc' => '5-inch 2-way bass-reflex bi-amplified nearfield studio monitor with flat response.', 'rating' => 4.5, 'reviews' => 167),
 
         // === NEW ARRIVALS ===
-        array('name' => 'Yamaha P-125 Digital Piano 88 Key', 'price' => '649', 'cat' => 'keyboards', 'img' => 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&h=600&fit=crop', 'desc' => '88-key weighted action digital piano with GHS keyboard and Pure CF Sound Engine.', 'rating' => 5.0, 'reviews' => 93),
-        array('name' => 'Bose QuietComfort Ultra Over-Ear', 'price' => '349', 'sale' => '429', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop', 'desc' => 'World-class noise cancellation with immersive spatial audio and 24-hour battery.', 'rating' => 4.5, 'reviews' => 208),
-        array('name' => 'Focusrite Scarlett 2i2 4th Gen USB', 'price' => '189', 'cat' => 'studio-gear', 'img' => 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?w=600&h=600&fit=crop', 'desc' => 'USB-C audio interface with Air mode for bright, open recordings and ultra-low latency.', 'rating' => 5.0, 'reviews' => 378),
-        array('name' => 'Roland TD-17KVX Electronic Drum Kit', 'price' => '1499', 'cat' => 'drums', 'img' => 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=600&h=600&fit=crop', 'desc' => 'V-Drums kit with mesh pads, Bluetooth audio streaming, and 50 preset kits.', 'rating' => 4.0, 'reviews' => 54),
-        array('name' => 'Crosley C200 Belt-Drive Turntable', 'price' => '179', 'cat' => 'turntables', 'img' => 'https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=600&h=600&fit=crop', 'desc' => 'Two-speed belt-driven turntable with S-shaped tonearm and adjustable counterweight.', 'rating' => 4.5, 'reviews' => 132),
+            array('name' => 'Yamaha P-125 Digital Piano 88 Key', 'price' => '649', 'cat' => 'keyboards', 'img' => 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&h=600&fit=crop', 'desc' => '88-key weighted action digital piano with GHS keyboard and Pure CF Sound Engine.', 'rating' => 5.0, 'reviews' => 93),
+            array('name' => 'Bose QuietComfort Ultra Over-Ear', 'price' => '349', 'sale' => '429', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop', 'desc' => 'World-class noise cancellation with immersive spatial audio and 24-hour battery.', 'rating' => 4.5, 'reviews' => 208),
+            array('name' => 'Focusrite Scarlett 2i2 4th Gen USB', 'price' => '189', 'cat' => 'studio-gear', 'img' => 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?w=600&h=600&fit=crop', 'desc' => 'USB-C audio interface with Air mode for bright, open recordings and ultra-low latency.', 'rating' => 5.0, 'reviews' => 378),
+            array('name' => 'Roland TD-17KVX Electronic Drum Kit', 'price' => '1499', 'cat' => 'drums', 'img' => 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=600&h=600&fit=crop', 'desc' => 'V-Drums kit with mesh pads, Bluetooth audio streaming, and 50 preset kits.', 'rating' => 4.0, 'reviews' => 54),
+            array('name' => 'Crosley C200 Belt-Drive Turntable', 'price' => '179', 'cat' => 'turntables', 'img' => 'https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=600&h=600&fit=crop', 'desc' => 'Two-speed belt-driven turntable with S-shaped tonearm and adjustable counterweight.', 'rating' => 4.5, 'reviews' => 132),
 
         // === HERO / BANNER FEATURED ===
-        array('name' => 'Sony WH-1000XM5 Wireless', 'price' => '348', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=600&h=600&fit=crop', 'desc' => 'Industry-leading noise cancellation with exceptional sound quality and 30-hour battery.', 'rating' => 4.5, 'reviews' => 245),
-        array('name' => 'Marshall Stanmore III Bluetooth Speaker', 'price' => '379', 'cat' => 'speakers', 'img' => 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&h=600&fit=crop', 'desc' => 'Iconic design meets modern wireless audio with Playfinity and Dynamic Loudness.', 'rating' => 4.5, 'reviews' => 156),
+            array('name' => 'Sony WH-1000XM5 Wireless', 'price' => '348', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=600&h=600&fit=crop', 'desc' => 'Industry-leading noise cancellation with exceptional sound quality and 30-hour battery.', 'rating' => 4.5, 'reviews' => 245),
+            array('name' => 'Marshall Stanmore III Bluetooth Speaker', 'price' => '379', 'cat' => 'speakers', 'img' => 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&h=600&fit=crop', 'desc' => 'Iconic design meets modern wireless audio with Playfinity and Dynamic Loudness.', 'rating' => 4.5, 'reviews' => 156),
 
         // === EXTRA PRODUCTS FOR VARIETY ===
-        array('name' => 'Sennheiser Momentum 4 Wireless', 'price' => '379', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop', 'desc' => 'Superior sound with adaptive noise cancellation and 60-hour battery life.', 'rating' => 4.5, 'reviews' => 167),
-        array('name' => 'Audio-Technica ATH-M50x', 'price' => '169', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=600&h=600&fit=crop', 'desc' => 'Professional studio monitor headphones with 45mm large-aperture drivers.', 'rating' => 4.5, 'reviews' => 425),
-        array('name' => 'Shure SM7B Dynamic Microphone', 'price' => '399', 'cat' => 'microphones', 'img' => 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?w=600&h=600&fit=crop', 'desc' => 'Professional dynamic microphone for broadcast, podcast and recording studios.', 'rating' => 5.0, 'reviews' => 512),
+            array('name' => 'Sennheiser Momentum 4 Wireless', 'price' => '379', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop', 'desc' => 'Superior sound with adaptive noise cancellation and 60-hour battery life.', 'rating' => 4.5, 'reviews' => 167),
+            array('name' => 'Audio-Technica ATH-M50x', 'price' => '169', 'cat' => 'headphones', 'img' => 'https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=600&h=600&fit=crop', 'desc' => 'Professional studio monitor headphones with 45mm large-aperture drivers.', 'rating' => 4.5, 'reviews' => 425),
+            array('name' => 'Shure SM7B Dynamic Microphone', 'price' => '399', 'cat' => 'microphones', 'img' => 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?w=600&h=600&fit=crop', 'desc' => 'Professional dynamic microphone for broadcast, podcast and recording studios.', 'rating' => 5.0, 'reviews' => 512),
     );
 
     $imported = 0;
@@ -581,7 +590,7 @@ function my_search_form($text)
 }
 
 // Check for newly created inc directory files
-if ( file_exists( get_template_directory() . '/inc/payment-setup.php' ) ) {
+if (file_exists(get_template_directory() . '/inc/payment-setup.php')) {
     require_once get_template_directory() . '/inc/payment-setup.php';
 }
 
@@ -610,14 +619,15 @@ function zendotech_import_admin_page()
         $count = zendotech_import_products();
         $message = $count > 0 ? "Successfully imported {$count} new products!" : "All products already exist. No new products imported.";
     }
-    ?>
+?>
     <div class="wrap">
         <h1>Import ZendoTech Products</h1>
         <?php if ($message): ?>
             <div class="notice notice-success">
                 <p><?php echo esc_html($message); ?></p>
             </div>
-        <?php endif; ?>
+        <?php
+    endif; ?>
         <p>Click the button below to import all demo products and categories into WooCommerce.</p>
         <p><strong>Note:</strong> Existing products will not be duplicated.</p>
         <form method="post">
@@ -647,8 +657,8 @@ function zendotech_set_product_image($product_id, $image_url, $title)
 }
 
 /* ============================================
-   7. WOOCOMMERCE: UPDATE CART COUNT VIA AJAX
-   ============================================ */
+ 7. WOOCOMMERCE: UPDATE CART COUNT VIA AJAX
+ ============================================ */
 
 /**
  * Render mini-cart content (shared between initial load and AJAX)
@@ -664,14 +674,15 @@ function zendotech_get_mini_cart_content()
             <a href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>" class="mc-shop-link">Start Shopping <i
                     class="fa-solid fa-arrow-right"></i></a>
         </div>
-    <?php else:
+    <?php
+    else:
         foreach ($cart_items as $cart_item_key => $cart_item):
             $_product = apply_filters('woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key);
             $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
 
             if ($_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters('woocommerce_cart_item_visible', true, $cart_item, $cart_item_key)):
                 $product_permalink = apply_filters('woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink($cart_item) : '', $cart_item, $cart_item_key);
-                ?>
+?>
                 <div class="mc-item">
                     <div class="mc-item-img">
                         <?php echo $_product->get_image(); ?>
@@ -679,10 +690,11 @@ function zendotech_get_mini_cart_content()
                     <div class="mc-item-info">
                         <h5 class="mc-item-name">
                             <?php if (!$product_permalink):
-                                echo wp_kses_post($_product->get_name());
-                            else: ?>
+                    echo wp_kses_post($_product->get_name());
+                else: ?>
                                 <a href="<?php echo esc_url($product_permalink); ?>"><?php echo wp_kses_post($_product->get_name()); ?></a>
-                            <?php endif; ?>
+                            <?php
+                endif; ?>
                         </h5>
                         <div class="mc-item-bottom">
                             <div class="mc-qty-wrap">
@@ -693,15 +705,15 @@ function zendotech_get_mini_cart_content()
                         </div>
                     </div>
                     <?php
-                    echo apply_filters('woocommerce_cart_item_remove_link', sprintf(
-                        '<a href="%s" class="mc-item-remove" aria-label="%s" data-product_id="%s" data-cart_item_key="%s" data-product_sku="%s"><i class="fa-solid fa-trash-can"></i></a>',
-                        esc_url(wc_get_cart_remove_url($cart_item_key)),
-                        esc_attr__('Remove this item', 'woocommerce'),
-                        esc_attr($product_id),
-                        esc_attr($cart_item_key),
-                        esc_attr($_product->get_sku())
-                    ), $cart_item_key);
-                    ?>
+                echo apply_filters('woocommerce_cart_item_remove_link', sprintf(
+                    '<a href="%s" class="mc-item-remove" aria-label="%s" data-product_id="%s" data-cart_item_key="%s" data-product_sku="%s"><i class="fa-solid fa-trash-can"></i></a>',
+                    esc_url(wc_get_cart_remove_url($cart_item_key)),
+                    esc_attr__('Remove this item', 'woocommerce'),
+                    esc_attr($product_id),
+                    esc_attr($cart_item_key),
+                    esc_attr($_product->get_sku())
+                ), $cart_item_key);
+?>
                 </div>
                 <?php
             endif;
@@ -712,33 +724,39 @@ function zendotech_get_mini_cart_content()
 
 function zendotech_cart_count_fragment($fragments)
 {
-    ob_start();
-    ?>
+    // Fragment 1: Cart count badge
+    ob_start(); ?>
     <span class="badge-count cart-count-fragment"><?php echo WC()->cart->get_cart_contents_count(); ?></span>
-    <?php
-    $fragments['.cart-count-fragment'] = ob_get_clean();
+    <?php $fragments['.cart-count-fragment'] = ob_get_clean();
 
-    ob_start();
-    ?>
-                        <span
-                            class="cart-label cart-total-fragment"><?php echo function_exists('WC') && WC()->cart ? WC()->cart->get_cart_total() : '<span class="woocommerce-Price-amount amount"><bdi><span class="woocommerce-Price-currencySymbol">KSh</span>&nbsp;0.00</bdi></span>'; ?></span>
-    <?php
-    $fragments['.cart-total-fragment'] = ob_get_clean();
+    // Fragment 2: Cart total label
+    ob_start(); ?>
+    <span class="cart-label cart-total-fragment"><?php echo WC()->cart->get_cart_total(); ?></span>
+    <?php $fragments['.cart-total-fragment'] = ob_get_clean();
 
-    // Mini-cart items fragment
-    $fragments['.mini-cart-content-fragment'] = zendotech_get_mini_cart_content();
+    // Fragment 3: Full wrapper div — WC's wc-cart-fragments.js does outerHTML replacement
+    ob_start(); ?>
+    <div class="mc-body mini-cart-content-fragment">
+        <?php echo zendotech_get_mini_cart_content(); ?>
+    </div>
+    <?php $fragments['.mini-cart-content-fragment'] = ob_get_clean();
 
-    // New: Mini-cart subtotal fragment
-    $fragments['.mc-subtotal-val-fragment'] = WC()->cart->get_cart_total();
-    $fragments['.mc-count-fragment'] = WC()->cart->get_cart_contents_count() . ' item' . (WC()->cart->get_cart_contents_count() !== 1 ? 's' : '');
+    // Fragment 4: Subtotal value
+    ob_start(); ?>
+    <span class="mc-subtotal-val mc-subtotal-val-fragment"><?php echo WC()->cart->get_cart_total(); ?></span>
+    <?php $fragments['.mc-subtotal-val-fragment'] = ob_get_clean();
+
+    // Fragment 5: Item count text
+    $count = WC()->cart->get_cart_contents_count();
+    $fragments['.mc-count-fragment'] = $count . ' item' . ($count !== 1 ? 's' : '');
 
     return $fragments;
 }
 add_filter('woocommerce_add_to_cart_fragments', 'zendotech_cart_count_fragment');
 
 /* ============================================
-   8. ELEMENTOR: SUPPORT FOR PAGES & PRODUCTS
-   ============================================ */
+ 8. ELEMENTOR: SUPPORT FOR PAGES & PRODUCTS
+ ============================================ */
 function zendotech_elementor_support()
 {
     if (did_action('elementor/loaded')) {
@@ -749,14 +767,14 @@ function zendotech_elementor_support()
 add_action('init', 'zendotech_elementor_support');
 
 /* ============================================
-   9. FOOTER BUILDER — CUSTOM ADMIN PAGE
-   ============================================ */
+ 9. FOOTER BUILDER — CUSTOM ADMIN PAGE
+ ============================================ */
 require_once get_template_directory() . '/inc/footer-builder.php';
 require_once get_template_directory() . '/inc/header-builder.php';
 
 /* ============================================
-   10. ELEMENTOR: CUSTOM WIDGETS
-   ============================================ */
+ 10. ELEMENTOR: CUSTOM WIDGETS
+ ============================================ */
 function zendotech_load_elementor_widgets()
 {
     if (did_action('elementor/loaded')) {
@@ -766,13 +784,13 @@ function zendotech_load_elementor_widgets()
 add_action('after_setup_theme', 'zendotech_load_elementor_widgets');
 
 /* ============================================
-   11. ELEMENTOR: FRONT PAGE AUTO-SETUP
-   ============================================ */
+ 11. ELEMENTOR: FRONT PAGE AUTO-SETUP
+ ============================================ */
 require_once get_template_directory() . '/inc/elementor-setup.php';
 
 /* ============================================
-   12. QUICK VIEW: AJAX HANDLER
-   ============================================ */
+ 12. QUICK VIEW: AJAX HANDLER
+ ============================================ */
 function zendotech_ajax_quick_view()
 {
     if (!isset($_POST['product_id']))
@@ -802,24 +820,24 @@ function zendotech_ajax_quick_view()
     $main_img_id = get_post_thumbnail_id($product_id);
     $main_url = $main_img_id ? wp_get_attachment_image_url($main_img_id, 'large') : wc_placeholder_img_src('large');
     $attachment_ids = $product->get_gallery_image_ids();
-    
+
     $gallery = array();
     if ($main_url) {
         $gallery[] = $main_url;
     }
-    
+
     foreach ($attachment_ids as $id) {
         $url = wp_get_attachment_image_url($id, 'large');
         if ($url && !in_array($url, $gallery)) {
             $gallery[] = $url;
         }
     }
-    
+
     // De-duplicate URLs again just to be safe
     $gallery = array_unique($gallery);
 
     ob_start();
-    ?>
+?>
     <div class="qv-grid">
         <div class="qv-gallery">
             <div class="qv-main-image">
@@ -827,7 +845,8 @@ function zendotech_ajax_quick_view()
                 <?php if (count($gallery) > 1): ?>
                     <button class="qv-nav qv-prev"><i class="fa-solid fa-chevron-left"></i></button>
                     <button class="qv-nav qv-next"><i class="fa-solid fa-chevron-right"></i></button>
-                <?php endif; ?>
+                <?php
+    endif; ?>
             </div>
             <?php if (count($gallery) > 1): ?>
                 <div class="qv-thumbnails">
@@ -835,9 +854,11 @@ function zendotech_ajax_quick_view()
                         <div class="qv-thumb <?php echo $i === 0 ? 'active' : ''; ?>" data-url="<?php echo esc_url($url); ?>">
                             <img src="<?php echo esc_url($url); ?>" alt="Thumbnail">
                         </div>
-                    <?php endforeach; ?>
+                    <?php
+        endforeach; ?>
                 </div>
-            <?php endif; ?>
+            <?php
+    endif; ?>
         </div>
         <div class="qv-details">
             <h2 class="qv-title"><?php echo esc_html($name); ?></h2>
@@ -903,9 +924,10 @@ add_action('wp_ajax_zendotech_quick_view', 'zendotech_ajax_quick_view');
 add_action('wp_ajax_nopriv_zendotech_quick_view', 'zendotech_ajax_quick_view');
 
 /* ============================================
-   AJAX SEARCH AUTOCOMPLETE
-   ============================================ */
-function zendotech_ajax_search() {
+ AJAX SEARCH AUTOCOMPLETE
+ ============================================ */
+function zendotech_ajax_search()
+{
     $keyword = isset($_POST['keyword']) ? sanitize_text_field($_POST['keyword']) : '';
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
 
@@ -914,24 +936,24 @@ function zendotech_ajax_search() {
     }
 
     $args = array(
-        'post_type'      => 'product',
-        'post_status'    => 'publish',
+        'post_type' => 'product',
+        'post_status' => 'publish',
         'posts_per_page' => 5,
-        's'              => $keyword,
+        's' => $keyword,
     );
 
     if (!empty($category)) {
         $args['tax_query'] = array(
-            array(
+                array(
                 'taxonomy' => 'product_cat',
-                'field'    => 'slug',
-                'terms'    => $category,
+                'field' => 'slug',
+                'terms' => $category,
             ),
         );
     }
 
     $query = new WP_Query($args);
-    
+
     if (!$query->have_posts()) {
         wp_send_json_error('No results');
     }
@@ -941,9 +963,9 @@ function zendotech_ajax_search() {
     while ($query->have_posts()) {
         $query->the_post();
         global $product;
-        
+
         $img = wp_get_attachment_image_url($product->get_image_id(), 'thumbnail') ?: wc_placeholder_img_src('thumbnail');
-        ?>
+?>
         <li class="asr-item">
             <a href="<?php the_permalink(); ?>">
                 <div class="asr-img"><img src="<?php echo esc_url($img); ?>" alt="<?php the_title_attribute(); ?>"></div>
@@ -965,8 +987,8 @@ add_action('wp_ajax_zendotech_ajax_search', 'zendotech_ajax_search');
 add_action('wp_ajax_nopriv_zendotech_ajax_search', 'zendotech_ajax_search');
 
 /* ============================================
-   13. SHOP: AJAX FILTER HANDLER
-   ============================================ */
+ 13. SHOP: AJAX FILTER HANDLER
+ ============================================ */
 function zendotech_ajax_shop_filter()
 {
     $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
@@ -1085,7 +1107,8 @@ function zendotech_ajax_shop_filter()
                 zendotech_product_card($product);
             }
         }
-    } else {
+    }
+    else {
         echo '<div class="no-products"><p>No products found matching your selection.</p></div>';
     }
     $grid_html = ob_get_clean();

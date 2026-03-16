@@ -332,7 +332,7 @@ do_action('woocommerce_before_cart');
                 <div class="feat-icon"><i class="fa-solid fa-truck-fast"></i></div>
                 <div>
                     <h4>Free Shipping</h4>
-                    <p>On orders over <?php echo function_exists('wc_price') ? wc_price(75000) : 'KSh 75,000'; ?></p>
+                    
                 </div>
             </div>
             <div class="feat-item">

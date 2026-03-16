@@ -239,7 +239,6 @@ get_header();
                 <div class="feat-icon"><i class="fa-solid fa-truck-fast"></i></div>
                 <div>
                     <h4>Free Shipping</h4>
-                    <p>On orders over $75</p>
                 </div>
             </div>
             <div class="feat-item">
@@ -252,7 +251,7 @@ get_header();
             <div class="feat-item">
                 <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div>
-                    <h4>2-Year Warranty</h4>
+                    <h4>1-Year Warranty</h4>
                     <p>On all audio products</p>
                 </div>
             </div>

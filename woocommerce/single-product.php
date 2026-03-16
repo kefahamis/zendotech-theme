@@ -353,7 +353,7 @@ while (have_posts()):
                         <div class="del-block">
                             <h4><i class="fa-solid fa-shield-halved"></i> Warranty</h4>
                             <ul>
-                                <li>2-year manufacturer warranty against defects</li>
+                                <li>1-year manufacturer warranty against defects</li>
                                 <li>Extended warranty options available at checkout</li>
                                 <li>Warranty does not cover physical damage or water exposure</li>
                             </ul>
@@ -554,7 +554,6 @@ while (have_posts()):
                     <div class="feat-icon"><i class="fa-solid fa-truck-fast"></i></div>
                     <div>
                         <h4>Free Shipping</h4>
-                        <p>On orders over $75</p>
                     </div>
                 </div>
                 <div class="feat-item">
@@ -567,7 +566,7 @@ while (have_posts()):
                 <div class="feat-item">
                     <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                     <div>
-                        <h4>2-Year Warranty</h4>
+                        <h4>1-Year Warranty</h4>
                         <p>On all audio products</p>
                     </div>
                 </div>

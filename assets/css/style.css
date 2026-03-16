@@ -590,6 +590,7 @@ body.is-header-sticky .main-header.is-sticky-enabled .header-inner {
     padding: 14px 18px;
     outline: none;
     font-size: 14px;
+    border-radius: 50px;
     color: var(--text-dark);
 }
 
@@ -1180,7 +1181,7 @@ body.is-header-sticky .main-header.is-sticky-enabled .header-inner {
     max-width: 100%;
     max-height: 360px;
     object-fit: contain;
-    filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .6));
+    /*filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .6));*/
     transition: transform 12s linear;
     /* Continuous movement */
 }
@@ -2048,8 +2049,8 @@ body.is-header-sticky .main-header.is-sticky-enabled .header-inner {
 }
 
 .tri-card img {
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
 }
 
@@ -5335,7 +5336,9 @@ body.is-header-sticky .main-header.is-sticky-enabled .header-inner {
     transform: translateX(5px);
     background: var(--cta-dark);
 }
-
+.sidebar-menu li{
+    border-bottom:1px solid #ccc;
+}
 @media (max-width: 1199px) {
     .bwp-widget-banner.layout-1 .title-banner {
         font-size: 18px;

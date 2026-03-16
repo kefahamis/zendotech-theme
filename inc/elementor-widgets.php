@@ -36,6 +36,7 @@ add_action( 'elementor/widgets/register', function() {
 		'newsletter-strip',
 		'brand-logos',
 		'features-bar',
+		'deal-of-the-day',
 	];
 
 	foreach ( $widgets as $widget ) {
