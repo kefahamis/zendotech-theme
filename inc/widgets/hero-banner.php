@@ -316,6 +316,7 @@ class Zendotech_Hero_Banner_Widget extends \Elementor\Widget_Base {
 									$cats = get_terms( [
 										'taxonomy'   => 'product_cat',
 										'hide_empty' => false,
+										'parent'     => 0,
 										'exclude'    => [ get_option( 'default_product_cat' ) ],
 									] );
 									if ( ! is_wp_error( $cats ) ) {
