@@ -88,6 +88,40 @@ class Zendotech_Brand_Logos_Widget extends \Elementor\Widget_Base {
 			'title_field' => '{{{ name }}}',
 		] );
 
+		$this->add_control( 'slider_settings_heading', [
+			'label'     => __( 'Slider Settings', 'zendotech' ),
+			'type'      => \Elementor\Controls_Manager::HEADING,
+			'separator' => 'before',
+		] );
+
+		$this->add_control( 'autoplay', [
+			'label'   => __( 'Autoplay', 'zendotech' ),
+			'type'    => \Elementor\Controls_Manager::SWITCHER,
+			'default' => 'yes',
+		] );
+
+		$this->add_control( 'autoplay_speed', [
+			'label'     => __( 'Autoplay Speed (ms)', 'zendotech' ),
+			'type'      => \Elementor\Controls_Manager::NUMBER,
+			'default'   => 3000,
+			'condition' => [ 'autoplay' => 'yes' ],
+		] );
+
+		$this->add_control( 'loop', [
+			'label'   => __( 'Loop', 'zendotech' ),
+			'type'    => \Elementor\Controls_Manager::SWITCHER,
+			'default' => 'yes',
+		] );
+
+		$this->add_responsive_control( 'slides_to_show', [
+			'label'   => __( 'Slides to Show', 'zendotech' ),
+			'type'    => \Elementor\Controls_Manager::SELECT,
+			'default' => '6',
+			'options' => [
+				'2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8',
+			],
+		] );
+
 		$this->end_controls_section();
 
 		/* ---- STYLE ---- */
@@ -118,38 +152,72 @@ class Zendotech_Brand_Logos_Widget extends \Elementor\Widget_Base {
 	}
 
 	protected function render() {
-		$s = $this->get_settings_for_display();
-		?>
-		<section class="brands-section">
-			<div class="container">
-				<div class="brand-logos">
-					<?php foreach ( $s['brands'] as $brand ) :
-						$has_image = ! empty( $brand['logo_image']['url'] );
+		$s   = $this->get_settings_for_display();
+		$uid = 'brand-slider-' . $this->get_id();
 
-						if ( ! $has_image ) {
-							// Build text-logo inline style safely
-							$style_parts = [
-								'font-size:'      . intval( $brand['font_size'] ) . 'px',
-								'font-weight:'    . esc_attr( $brand['font_weight'] ),
-								'color:'          . esc_attr( $brand['color'] ?: '#333' ),
-								'letter-spacing:' . intval( $brand['letter_spacing'] ) . 'px',
-							];
-							if ( $brand['italic'] === 'yes' ) $style_parts[] = 'font-style:italic';
-							if ( ! empty( $brand['font_family'] ) ) $style_parts[] = 'font-family:' . esc_attr( $brand['font_family'] );
-							$style = implode( ';', $style_parts );
-						}
-						?>
-						<div class="brand-logo">
-							<?php if ( $has_image ) : ?>
-								<img src="<?php echo esc_url( $brand['logo_image']['url'] ); ?>" alt="<?php echo esc_attr( $brand['name'] ); ?>" style="max-height:50px;width:auto;object-fit:contain;">
-							<?php else : ?>
-								<span style="<?php echo $style; ?>"><?php echo esc_html( $brand['name'] ); ?></span>
-							<?php endif; ?>
-						</div>
-					<?php endforeach; ?>
+		// Swiper config
+		$auto = $s['autoplay'] === 'yes' ? '{ delay: ' . intval( $s['autoplay_speed'] ) . ', disableOnInteraction: false }' : 'false';
+		$loop = $s['loop'] === 'yes' ? 'true' : 'false';
+
+		$spv_desktop = intval( $s['slides_to_show'] ?? 6 ) ?: 6;
+		$spv_tablet  = intval( $s['slides_to_show_tablet'] ?? 4 ) ?: 4;
+		$spv_mobile  = intval( $s['slides_to_show_mobile'] ?? 2 ) ?: 2;
+		?>
+		<section class="brands-section" id="<?php echo esc_attr( $uid ); ?>">
+			<div class="container">
+				<div class="swiper brandLogosSwiper">
+					<div class="swiper-wrapper">
+						<?php foreach ( $s['brands'] as $brand ) :
+							$has_image = ! empty( $brand['logo_image']['url'] );
+
+							if ( ! $has_image ) {
+								$style_parts = [
+									'font-size:'      . intval( $brand['font_size'] ) . 'px',
+									'font-weight:'    . esc_attr( $brand['font_weight'] ),
+									'color:'          . esc_attr( $brand['color'] ?: '#333' ),
+									'letter-spacing:' . intval( $brand['letter_spacing'] ) . 'px',
+								];
+								if ( $brand['italic'] === 'yes' ) $style_parts[] = 'font-style:italic';
+								if ( ! empty( $brand['font_family'] ) ) $style_parts[] = 'font-family:' . esc_attr( $brand['font_family'] );
+								$style = implode( ';', $style_parts );
+							}
+							?>
+							<div class="swiper-slide">
+								<div class="brand-logo">
+									<?php if ( $has_image ) : ?>
+										<img src="<?php echo esc_url( $brand['logo_image']['url'] ); ?>" alt="<?php echo esc_attr( $brand['name'] ); ?>" style="max-height:50px;width:auto;object-fit:contain;">
+									<?php else : ?>
+										<span style="<?php echo $style; ?>"><?php echo esc_html( $brand['name'] ); ?></span>
+									<?php endif; ?>
+								</div>
+							</div>
+						<?php endforeach; ?>
+					</div>
 				</div>
 			</div>
 		</section>
+
+		<style>
+			#<?php echo $uid; ?> .brand-logos { display: none; } /* Hide old static if any legacy CSS remains */
+			#<?php echo $uid; ?> .brandLogosSwiper { padding: 10px 0; }
+			#<?php echo $uid; ?> .brand-logo { display: flex; align-items: center; justify-content: center; height: 80px; transition: opacity 0.3s ease; }
+			#<?php echo $uid; ?> .brand-logo img { max-width: 150px; }
+		</style>
+
+		<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var swiper = new Swiper("#<?php echo $uid; ?> .brandLogosSwiper", {
+				slidesPerView: <?php echo $spv_mobile; ?>,
+				spaceBetween: 30,
+				loop: <?php echo $loop; ?>,
+				autoplay: <?php echo $auto; ?>,
+				breakpoints: {
+					768: { slidesPerView: <?php echo $spv_tablet; ?> },
+					1024: { slidesPerView: <?php echo $spv_desktop; ?> }
+				}
+			});
+		});
+		</script>
 		<?php
 	}
 }

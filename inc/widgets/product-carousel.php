@@ -389,15 +389,15 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 		.zpc-tab { border:1px dashed #dce0e8; border-radius:999px; padding:7px 24px; font-size:15px; font-weight:600; color:#5c5d70; background:#fff; box-shadow:0 12px 28px rgba(15,16,40,.08); transition:all .25s ease; }
 		.zpc-tab.active { color:var(--accent,#c62b21); border-color:var(--accent,#c62b21); border-style:solid; }
 		.zpc-tab.active::after { content:none; }
-		.zpc-layout { display:grid; grid-template-columns:320px minmax(0,1fr); gap:30px; align-items:flex-start; }
-		.zpc-banner-panel { position:sticky; top:25px; align-self:start; }
-		.zpc-banner-card { background:#fff; border-radius:28px; padding:30px 26px 24px; box-shadow:0 28px 50px rgba(19,20,45,.08); border:1px solid rgba(0,0,0,.05); display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden; }
+		.zpc-layout { display:grid; grid-template-columns:320px minmax(0,1fr); gap:30px; align-items:stretch; }
+		.zpc-banner-panel { position:sticky; top:25px; align-self:start; height:100%; }
+		.zpc-banner-card { background:#fff; border-radius:28px; padding:30px 26px 24px; box-shadow:0 28px 50px rgba(19,20,45,.08); border:1px solid rgba(0,0,0,.05); display:flex; flex-direction:column; gap:14px; position:relative; overflow:hidden; height:100%; min-height:480px; }
 		.zpc-banner-card h3 { margin:0; font-size:26px; font-weight:700; color:#1e1e26; }
 		.zpc-banner-card p { margin:0; color:#6c6f83; font-size:16px; line-height:1.6; }
 		.zpc-banner-cta { align-self:flex-start; }
-		.zpc-banner-image { margin-top:12px; }
-		.zpc-banner-image img { width:100%; border-radius:20px; box-shadow:0 18px 40px rgba(0,0,0,.08); height:auto; object-fit:cover; }
-		.zpc-panel { display:none; position:relative; padding-top:30px; }
+		.zpc-banner-image { margin-top:auto; padding-top:20px; }
+		.zpc-banner-image img { width:100%; border-radius:20px; box-shadow:0 18px 40px rgba(0,0,0,.08); height:auto; object-fit:cover; display:block; }
+		.zpc-panel { display:none; position:relative; padding-top:10px; }
 		.zpc-panel.active { display:block; animation:zpcFade .4s ease; }
 		@keyframes zpcFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 		.zpc-track { position:relative; min-height:350px; }
@@ -405,14 +405,14 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 		.zpc-page.active { position:relative; opacity:1; visibility:visible; transform:translateX(0); z-index:2; }
 		.zpc-products-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:18px; }
 		.zpc-products-grid .product-card { width:100%; }
-		.zpc-dots { display:flex; justify-content:flex-start; gap:10px; margin-top:32px; }
+		.zpc-dots { display:flex; justify-content:center; gap:10px; margin-top:32px; }
 		.zpc-dot { width:22px; height:6px; border-radius:999px; border:none; background:#d7d9e0; cursor:pointer; transition:all .25s ease; }
 		.zpc-dot.active { width:40px; background:var(--accent,#c62b21); }
-		.zpc-panel-controls { position:absolute; top:12px; right:0; display:flex; gap:8px; z-index:5; }
-		.zpc-arrow { width:44px; height:44px; border-radius:10px; border:1px solid #dfe2e7; background:#fff; color:#1d1d2d; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 14px 30px rgba(11,14,40,.12); cursor:pointer; transition:all .25s ease; }
-		.zpc-arrow:hover { border-color:var(--accent,#c62b21); color:var(--accent,#c62b21); }
+		.zpc-panel-controls { position:absolute; top: -65px; right:0; display:flex; gap:8px; z-index:5; }
+		.zpc-arrow { width:38px; height:38px; border-radius:10px; border:1px solid #dfe2e7; background:#fff; color:#1d1d2d; display:flex; align-items:center; justify-content:center; font-size:14px; box-shadow:0 10px 20px rgba(11,14,40,.08); cursor:pointer; transition:all .25s ease; }
+		.zpc-arrow:hover { border-color:var(--accent,#c62b21); color:var(--accent,#c62b21); transform: translateY(-2px); }
 		@media (max-width:1200px) { .zpc-layout { grid-template-columns:1fr; } .zpc-panel-controls { position:static; margin-bottom:18px; justify-content:flex-end; } .zpc-page { position:relative; } }
-		@media (max-width:768px) { .zpc-heading-row { flex-direction:column; align-items:flex-start; } .zpc-tabs { justify-content:flex-start; } .zpc-tab { padding:6px 18px; font-size:14px; } }
+		@media (max-width:768px) { .zpc-heading-row { flex-direction:column; align-items:flex-start; } .zpc-tabs { justify-content:flex-start; } .zpc-tab { padding:6px 18px; font-size:14px; } .zpc-panel-controls { display:none; } }
 		';
 		wp_register_style( 'zendotech-product-carousel', false );
 		wp_add_inline_style( 'zendotech-product-carousel', $css );

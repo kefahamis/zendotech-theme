@@ -36,11 +36,12 @@
                                     'monitors' => 'fa-desktop',
                                     'accessories' => 'fa-bolt',
                                 );
-                                $cats = get_terms(array(
-                                    'taxonomy' => 'product_cat',
-                                    'hide_empty' => false,
-                                    'exclude' => array(get_option('default_product_cat')),
-                                ));
+                            $cats = get_terms(array(
+                                'taxonomy' => 'product_cat',
+                                'hide_empty' => false,
+                                'parent' => 0,
+                                'exclude' => array(get_option('default_product_cat')),
+                            ));
                                 if (!is_wp_error($cats)) {
                                     $count = 0;
                                     foreach ($cats as $cat) {
