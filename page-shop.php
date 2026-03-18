@@ -197,34 +197,48 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
                             <?php
 
+                            $shop_link = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : '#';
                             $cats = get_terms(array(
-
                                 'taxonomy' => 'product_cat',
-
                                 'hide_empty' => true,
-
                                 'parent' => 0,
-
                                 'exclude' => array(get_option('default_product_cat')),
-
                             ));
+
+                            $all_active = !$is_category;
+                            ?>
+                            <li>
+                                <a href="<?php echo esc_url($shop_link); ?>" <?php if ($all_active): ?>class="active"<?php endif; ?>
+                                   data-id=""
+                                   data-category-id=""
+                                   data-category-slug=""
+                                   data-type="category">
+                                    <span>All Categories</span>
+                                </a>
+                            </li>
+
+                            <?php
 
                             if (!is_wp_error($cats)) {
 
                                 foreach ($cats as $cat) {
-
-                                    $active = ($is_category && $current_cat->term_id === $cat->term_id) ? ' class="active"' : '';
-
-                                    echo '<li><a href="' . esc_url(get_term_link($cat)) . '"' . $active . ' data-id="' . esc_attr($cat->term_id) . '" data-type="category">';
-
-                                    echo '<span>' . esc_html($cat->name) . '</span> ';
-
-                                    echo '<span class="count">(' . esc_html($cat->count) . ')</span>';
-
-                                    echo '</a></li>';
-
+                                    $cat_active = ($is_category && isset($current_cat->term_id) && $current_cat->term_id === $cat->term_id);
+                                    $count = function_exists('zendotech_get_category_product_count')
+                                        ? zendotech_get_category_product_count($cat->term_id)
+                                        : (isset($cat->count) ? absint($cat->count) : 0);
+                                    ?>
+                                    <li>
+                                        <a href="<?php echo esc_url(get_term_link($cat)); ?>" <?php if ($cat_active): ?>class="active"<?php endif; ?>
+                                           data-id="<?php echo esc_attr($cat->term_id); ?>"
+                                           data-category-id="<?php echo esc_attr($cat->term_id); ?>"
+                                           data-category-slug="<?php echo esc_attr($cat->slug); ?>"
+                                           data-type="category">
+                                            <span><?php echo esc_html($cat->name); ?></span>
+                                            <span class="count">(<?php echo esc_html($count); ?>)</span>
+                                        </a>
+                                    </li>
+                                    <?php
                                 }
-
                             }
 
                             ?>
@@ -655,13 +669,16 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
                 $total_pages = max(1, (int) ceil($total / $per_page));
 
-                $permalink = $is_category && isset($current_cat->term_id) ? get_term_link($current_cat) : get_permalink();
-
-                if (is_wp_error($permalink)) {
-
-                    $permalink = get_permalink();
-
-                }
+                    $shop_page_link = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_permalink();
+                    $permalink = '';
+                    if ($is_category && isset($current_cat->term_id)) {
+                        $permalink = get_term_link($current_cat);
+                        if (is_wp_error($permalink)) {
+                            $permalink = $shop_page_link;
+                        }
+                    } else {
+                        $permalink = $shop_page_link;
+                    }
 
                 if ($total_pages > 1):
 
@@ -853,7 +870,7 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
                     <h4>Free Shipping</h4>
 
-                    <p>On orders over $75</p>
+                    <p><?php echo __( 'Free shipping available across Kenya', 'zendotech' ); ?></p>
 
                 </div>
 
@@ -879,7 +896,7 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
                 <div>
 
-                    <h4>2-Year Warranty</h4>
+                    <h4>1-Year Warranty</h4>
 
                     <p>On all audio products</p>
 
@@ -990,4 +1007,3 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
 
 <?php get_footer(); ?>
-

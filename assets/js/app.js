@@ -1615,19 +1615,23 @@
 
         const sidebar = document.getElementById('shopSidebar');
         const grid = document.getElementById('shopGrid');
+        if (!sidebar || !grid) {
+            return;
+        }
+
         const sortBy = document.getElementById('sortBy');
         const minPrice = document.getElementById('minPrice');
         const maxPrice = document.getElementById('maxPrice');
         const btnFilterPrice = document.getElementById('btnFilterPrice');
 
+        const activeCategoryLink = sidebar.querySelector('.category-list a.active');
+        const initialCategory = activeCategoryLink ? (activeCategoryLink.dataset.categoryId || activeCategoryLink.dataset.id || '') : '';
         let currentData = {
             action: 'zendotech_ajax_shop_filter',
-            category: '',
+            category: initialCategory ? parseInt(initialCategory, 10) : '',
             brands: [],
             status: [],
             rating: [],
-            min_price: 0,
-            max_price: 5000,
             orderby: sortBy ? sortBy.value : 'default',
             paged: 1
         };
@@ -1696,7 +1700,9 @@
                 e.preventDefault();
                 sidebar.querySelectorAll('.category-list a').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
-                currentData.category = link.dataset.id;
+
+                const categoryId = link.dataset.categoryId || link.dataset.id || '';
+                currentData.category = categoryId ? parseInt(categoryId, 10) : '';
                 updateShop();
             });
         });
@@ -1723,10 +1729,10 @@
         });
 
         // Price Filter
-        if (btnFilterPrice) {
+        if (btnFilterPrice && minPrice && maxPrice) {
             btnFilterPrice.addEventListener('click', () => {
-                currentData.min_price = minPrice.value || 0;
-                currentData.max_price = maxPrice.value || 5000;
+                currentData.min_price = parseFloat(minPrice.value) || 0;
+                currentData.max_price = parseFloat(maxPrice.value) || 5000;
                 updateShop();
             });
         }

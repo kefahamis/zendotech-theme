@@ -116,7 +116,7 @@
                             <div class="mc-shipping-note">
                                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--text-muted);">
                                     <input type="checkbox" id="mcShippingCheck" style="margin: 0;">
-                                    <span><i class="fa-solid fa-truck-fast" style="margin-right: 4px;"></i> Free shipping on orders over <?php echo function_exists('wc_price') ? wc_price(75000) : 'KSh 75,000'; ?></span>
+                                    <span><i class="fa-solid fa-truck-fast" style="margin-right: 4px;"></i> <?php echo __( 'Free shipping across Kenya', 'zendotech' ); ?></span>
                                 </label>
                             </div>
                             <div class="mc-actions">

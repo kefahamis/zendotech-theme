@@ -27,11 +27,21 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 		] );
 
 		$this->add_control( 'tab1_label',  [ 'label' => __( 'Tab 1 Label', 'zendotech' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Featured' ] );
+		$category_options = $this->get_category_options();
+
 		$this->add_control( 'tab1_source', [
 			'label'   => __( 'Tab 1 Source', 'zendotech' ),
 			'type'    => \Elementor\Controls_Manager::SELECT,
 			'default' => 'featured',
 			'options' => $this->source_options(),
+		] );
+		$this->add_control( 'tab1_category', [
+			'label'       => __( 'Tab 1 Category', 'zendotech' ),
+			'type'        => \Elementor\Controls_Manager::SELECT,
+			'options'     => $category_options,
+			'default'     => '',
+			'label_block' => true,
+			'condition'   => [ 'tab1_source' => 'category' ],
 		] );
 		$this->add_control( 'tab2_label',  [ 'label' => __( 'Tab 2 Label', 'zendotech' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'On Sale' ] );
 		$this->add_control( 'tab2_source', [
@@ -40,12 +50,28 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 			'default' => 'on_sale',
 			'options' => $this->source_options(),
 		] );
+		$this->add_control( 'tab2_category', [
+			'label'       => __( 'Tab 2 Category', 'zendotech' ),
+			'type'        => \Elementor\Controls_Manager::SELECT,
+			'options'     => $category_options,
+			'default'     => '',
+			'label_block' => true,
+			'condition'   => [ 'tab2_source' => 'category' ],
+		] );
 		$this->add_control( 'tab3_label',  [ 'label' => __( 'Tab 3 Label', 'zendotech' ), 'type' => \Elementor\Controls_Manager::TEXT, 'default' => 'Top Rated' ] );
 		$this->add_control( 'tab3_source', [
 			'label'   => __( 'Tab 3 Source', 'zendotech' ),
 			'type'    => \Elementor\Controls_Manager::SELECT,
 			'default' => 'popular',
 			'options' => $this->source_options(),
+		] );
+		$this->add_control( 'tab3_category', [
+			'label'       => __( 'Tab 3 Category', 'zendotech' ),
+			'type'        => \Elementor\Controls_Manager::SELECT,
+			'options'     => $category_options,
+			'default'     => '',
+			'label_block' => true,
+			'condition'   => [ 'tab3_source' => 'category' ],
 		] );
 
 		$this->add_control( 'products_per_page', [
@@ -230,9 +256,21 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 		}
 
 		$tabs = [
-			[ 'label' => $s['tab1_label'], 'source' => $s['tab1_source'] ],
-			[ 'label' => $s['tab2_label'], 'source' => $s['tab2_source'] ],
-			[ 'label' => $s['tab3_label'], 'source' => $s['tab3_source'] ],
+			[
+				'label'    => $s['tab1_label'],
+				'source'   => $s['tab1_source'] ?? 'featured',
+				'category' => isset( $s['tab1_category'] ) ? absint( $s['tab1_category'] ) : 0,
+			],
+			[
+				'label'    => $s['tab2_label'],
+				'source'   => $s['tab2_source'] ?? 'on_sale',
+				'category' => isset( $s['tab2_category'] ) ? absint( $s['tab2_category'] ) : 0,
+			],
+			[
+				'label'    => $s['tab3_label'],
+				'source'   => $s['tab3_source'] ?? 'popular',
+				'category' => isset( $s['tab3_category'] ) ? absint( $s['tab3_category'] ) : 0,
+			],
 		];
 		$section_title_text = ! empty( $s['section_title'] ) ? $s['section_title'] : __( 'Laptops & Computers', 'zendotech' );
 		$banner_heading      = ! empty( $s['banner_heading'] ) ? $s['banner_heading'] : '';
@@ -286,7 +324,7 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 
 					<div class="zpc-carousel-panel">
 						<?php foreach ( $tabs as $i => $tab ) :
-							$products   = $this->get_products_for_source( $tab['source'], $tot );
+							$products   = $this->get_products_for_source( $tab, $tot );
 							$pages      = array_chunk( $products, $per );
 							$num_pages  = count( $pages );
 							?>
@@ -424,11 +462,32 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 			'on_sale'  => __( 'On Sale', 'zendotech' ),
 			'popular'  => __( 'Top Rated / Popular', 'zendotech' ),
 			'latest'   => __( 'Latest', 'zendotech' ),
+			'category' => __( 'Category', 'zendotech' ),
 		];
 	}
 
-	private function get_products_for_source( $source, $limit ) {
+	private function get_category_options() {
+		$options = [ '' => __( 'Select Category', 'zendotech' ) ];
+		if ( function_exists( 'get_terms' ) && taxonomy_exists( 'product_cat' ) ) {
+			$cats = get_terms( [
+				'taxonomy'   => 'product_cat',
+				'hide_empty' => false,
+				'exclude'    => [ get_option( 'default_product_cat' ) ],
+			] );
+			if ( ! is_wp_error( $cats ) ) {
+				foreach ( $cats as $cat ) {
+					$options[ (string) $cat->term_id ] = sprintf( '%s (%d)', $cat->name, isset( $cat->count ) ? absint( $cat->count ) : 0 );
+				}
+			}
+		}
+		return $options;
+	}
+
+	private function get_products_for_source( $tab, $limit ) {
 		if ( ! function_exists( 'wc_get_products' ) ) return [];
+
+		$source   = is_array( $tab ) ? ( $tab['source'] ?? 'latest' ) : (string) $tab;
+		$category = is_array( $tab ) ? absint( $tab['category'] ?? 0 ) : 0;
 
 		switch ( $source ) {
 			case 'on_sale':
@@ -446,6 +505,25 @@ class Zendotech_Product_Carousel_Widget extends \Elementor\Widget_Base {
 			case 'featured':
 				$prods = wc_get_products( [ 'limit' => $limit, 'featured' => true, 'status' => 'publish' ] );
 				return ! empty( $prods ) ? $prods : wc_get_products( [ 'limit' => $limit, 'orderby' => 'date', 'order' => 'DESC', 'status' => 'publish' ] );
+
+			case 'category':
+				if ( $category ) {
+					return wc_get_products( [
+						'limit'     => $limit,
+						'orderby'   => 'date',
+						'order'     => 'DESC',
+						'status'    => 'publish',
+						'tax_query' => [
+							[
+								'taxonomy' => 'product_cat',
+								'field'    => 'term_id',
+								'terms'    => [ $category ],
+								'operator' => 'IN',
+							],
+						],
+					] );
+				}
+				return wc_get_products( [ 'limit' => $limit, 'orderby' => 'date', 'order' => 'DESC', 'status' => 'publish' ] );
 
 			default:
 				return wc_get_products( [ 'limit' => $limit, 'orderby' => 'date', 'order' => 'DESC', 'status' => 'publish' ] );

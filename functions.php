@@ -52,6 +52,12 @@ function zendotech_theme_setup()
 }
 add_action('after_setup_theme', 'zendotech_theme_setup');
 
+add_filter('woocommerce_currency_symbol', 'zendotech_strip_dollar_currency_symbol', 10, 2);
+function zendotech_strip_dollar_currency_symbol($symbol, $currency)
+{
+    return $symbol === '$' ? '' : $symbol;
+}
+
 /* ============================================
  2. ENQUEUE SCRIPTS & STYLES
  ============================================ */
@@ -78,7 +84,7 @@ function zendotech_enqueue_scripts()
 
     if (function_exists('is_product') && is_product()) {
         wp_enqueue_style('zendotech-product-style', get_template_directory_uri() . '/assets/css/product.css', array(), '1.0.1');
-        wp_enqueue_script('zendotech-product-js', get_template_directory_uri() . '/assets/js/product.js', array('zendotech-app-js'), '1.0.1', true);
+        wp_enqueue_script('zendotech-product-js', get_template_directory_uri() . '/assets/js/product.js', array('zendotech-app-js'), '1.2.1', true);
     }
 
     if (function_exists('is_cart') && is_cart()) {
@@ -419,6 +425,26 @@ function zendotech_product_card($product)
         </div>
     </div>
     <?php
+}
+
+/**
+ * Sum product counts across a category and its descendant terms.
+ */
+function zendotech_get_category_product_count($category_id)
+{
+    $terms = get_term_children($category_id, 'product_cat');
+    $term_ids = is_array($terms) ? $terms : array();
+    array_unshift($term_ids, $category_id);
+
+    $total = 0;
+    foreach ($term_ids as $term_id) {
+        $term = get_term($term_id, 'product_cat');
+        if (!is_wp_error($term)) {
+            $total += absint($term->count);
+        }
+    }
+
+    return $total;
 }
 
 /* ============================================
@@ -1039,13 +1065,18 @@ function zendotech_ajax_shop_filter()
     }
 
     // Tax Query (Category)
-    $tax_query = array('relation' => 'AND');
+    $tax_query = array();
     if ($cat_id > 0) {
         $tax_query[] = array(
             'taxonomy' => 'product_cat',
             'field' => 'term_id',
             'terms' => $cat_id,
+            'include_children' => true,
         );
+    }
+    if (!empty($tax_query)) {
+        $tax_query = array_merge(array('relation' => 'AND'), $tax_query);
+        $args['tax_query'] = $tax_query;
     }
 
     // Meta Query (Price, Brands, Rating)
@@ -1094,7 +1125,6 @@ function zendotech_ajax_shop_filter()
     }
 
     $args['meta_query'] = $meta_query;
-    $args['tax_query'] = $tax_query;
 
     $query = new WP_Query($args);
 

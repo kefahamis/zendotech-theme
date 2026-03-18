@@ -94,47 +94,6 @@
     }
 
     /* -------------------------------------------
-       4. CATEGORY FILTER (Sidebar)
-       ------------------------------------------- */
-    function initCategoryFilter() {
-        const catLinks = document.querySelectorAll('.category-list a');
-        const grid = document.querySelector('.shop-grid');
-        const resultsCount = document.querySelector('.results-count strong');
-        if (!catLinks.length) return;
-
-        catLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                catLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-
-                const category = link.querySelector('.cat-name')
-                    ? link.querySelector('.cat-name').textContent.trim().toLowerCase()
-                    : link.textContent.trim().toLowerCase();
-
-                if (!grid) return;
-                const cards = grid.querySelectorAll('.product-card');
-                let visibleCount = 0;
-
-                cards.forEach(card => {
-                    const cardCat = card.querySelector('.pc-cat');
-                    const cardCatText = cardCat ? cardCat.textContent.trim().toLowerCase() : '';
-
-                    if (category === 'all' || category.includes('all') || cardCatText.includes(category) || category.includes(cardCatText)) {
-                        card.style.display = '';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                if (resultsCount) resultsCount.textContent = visibleCount;
-            });
-        });
-    }
-
-    /* -------------------------------------------
        5. BRAND / STATUS CHECKBOX FILTERS
        ------------------------------------------- */
     function initCheckboxFilters() {
@@ -345,7 +304,6 @@
         initFilterSidebar();
         initViewToggle();
         initSort();
-        initCategoryFilter();
         initCheckboxFilters();
         initPriceRange();
         initPagination();

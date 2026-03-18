@@ -35,6 +35,15 @@ while (have_posts()):
     $sale_price = $product->get_sale_price();
     $save_amount = ($regular_price && $sale_price) ? ($regular_price - $sale_price) : 0;
     $sale_percent = ($regular_price && $sale_price && $regular_price > 0) ? round((($regular_price - $sale_price) / $regular_price) * 100) : 0;
+    $sale_ends_dt = $product->get_date_on_sale_to();
+    $current_ts = (int) current_time('timestamp');
+    $sale_end_ts = $sale_ends_dt ? (int) $sale_ends_dt->getTimestamp() : 0;
+    $flash_remaining = max(0, $sale_end_ts - $current_ts);
+    $flash_hours = floor($flash_remaining / 3600);
+    $flash_minutes = floor(($flash_remaining % 3600) / 60);
+    $flash_seconds = $flash_remaining % 60;
+    $minimum_sale_badge_pct = 5;
+    $show_sale_badge = $sale_percent >= $minimum_sale_badge_pct;
 
     // Get first category link
     $terms = get_the_terms($product_id, 'product_cat');
@@ -68,7 +77,7 @@ while (have_posts()):
                 <!-- Gallery -->
                 <div class="product-gallery">
                     <div class="gallery-main" id="galleryMain">
-                        <?php if ($on_sale && $sale_percent > 0): ?>
+                        <?php if ($on_sale && $sale_percent > 0 && $show_sale_badge): ?>
                             <span class="gallery-badge sale-tag">-<?php echo esc_html($sale_percent); ?>%</span>
                         <?php endif; ?>
                         <img id="mainImage" src="<?php echo esc_url($main_image); ?>" alt="<?php the_title_attribute(); ?>"
@@ -133,19 +142,19 @@ while (have_posts()):
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($on_sale): ?>
+                    <?php if ($on_sale && $sale_price && $flash_remaining > 0): ?>
                         <!-- Flash Sale -->
                         <div class="flash-sale-bar">
                             <div class="fsb-info">
                                 <i class="fa-solid fa-bolt"></i>
                                 <span>Flash Sale ends in:</span>
                             </div>
-                            <div class="fsb-timer" id="flashTimer">
-                                <div class="cd-box"><span id="fsHours">04</span><small>hrs</small></div>
+                            <div class="fsb-timer" id="flashTimer" data-remaining="<?php echo esc_attr($flash_remaining); ?>">
+                                <div class="cd-box"><span id="fsHours"><?php echo str_pad($flash_hours, 2, '0', STR_PAD_LEFT); ?></span><small>hrs</small></div>
                                 <div class="cd-sep">:</div>
-                                <div class="cd-box"><span id="fsMinutes">32</span><small>min</small></div>
+                                <div class="cd-box"><span id="fsMinutes"><?php echo str_pad($flash_minutes, 2, '0', STR_PAD_LEFT); ?></span><small>min</small></div>
                                 <div class="cd-sep">:</div>
-                                <div class="cd-box"><span id="fsSeconds">18</span><small>sec</small></div>
+                                <div class="cd-box"><span id="fsSeconds"><?php echo str_pad($flash_seconds, 2, '0', STR_PAD_LEFT); ?></span><small>sec</small></div>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -224,7 +233,7 @@ while (have_posts()):
                     <div class="pi-guarantees">
                         <div class="pg-item">
                             <i class="fa-solid fa-truck-fast"></i>
-                            <div><strong>Free Shipping</strong><span>Orders over $75</span></div>
+                            <div><strong>Free Shipping</strong><span><?php echo __( 'Available across Kenya', 'zendotech' ); ?></span></div>
                         </div>
                         <div class="pg-item">
                             <i class="fa-solid fa-rotate-left"></i>
@@ -694,21 +703,42 @@ while (have_posts()):
             });
 
             /* ---- FLASH SALE COUNTDOWN ---- */
-            const fsHours = document.getElementById('fsHours');
-            const fsMinutes = document.getElementById('fsMinutes');
-            const fsSeconds = document.getElementById('fsSeconds');
-            if (fsHours && fsMinutes && fsSeconds) {
-                let totalSeconds = 4 * 3600 + 32 * 60 + 18;
-                setInterval(() => {
-                    if (totalSeconds <= 0) return;
-                    totalSeconds--;
-                    const h = Math.floor(totalSeconds / 3600);
-                    const m = Math.floor((totalSeconds % 3600) / 60);
-                    const s = totalSeconds % 60;
-                    fsHours.textContent = h.toString().padStart(2, '0');
-                    fsMinutes.textContent = m.toString().padStart(2, '0');
-                    fsSeconds.textContent = s.toString().padStart(2, '0');
-                }, 1000);
+            const flashTimer = document.getElementById('flashTimer');
+            if (flashTimer) {
+                const fsHours = document.getElementById('fsHours');
+                const fsMinutes = document.getElementById('fsMinutes');
+                const fsSeconds = document.getElementById('fsSeconds');
+                if (fsHours && fsMinutes && fsSeconds) {
+                    const flashBar = flashTimer.closest('.flash-sale-bar');
+                    let totalSeconds = parseInt(flashTimer.dataset.remaining, 10) || 0;
+                    const updateFlashTime = () => {
+                        const h = Math.floor(totalSeconds / 3600);
+                        const m = Math.floor((totalSeconds % 3600) / 60);
+                        const s = totalSeconds % 60;
+                        fsHours.textContent = String(h).padStart(2, '0');
+                        fsMinutes.textContent = String(m).padStart(2, '0');
+                        fsSeconds.textContent = String(s).padStart(2, '0');
+                    };
+                    if (totalSeconds <= 0) {
+                        updateFlashTime();
+                        if (flashBar && flashBar.parentNode) {
+                            flashBar.parentNode.removeChild(flashBar);
+                        }
+                        return;
+                    }
+
+                    updateFlashTime();
+                    const flashInterval = setInterval(() => {
+                        totalSeconds = Math.max(0, totalSeconds - 1);
+                        updateFlashTime();
+                        if (totalSeconds <= 0) {
+                            clearInterval(flashInterval);
+                            if (flashBar && flashBar.parentNode) {
+                                flashBar.parentNode.removeChild(flashBar);
+                            }
+                        }
+                    }, 1000);
+                }
             }
         });
     </script>

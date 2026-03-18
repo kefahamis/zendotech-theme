@@ -232,7 +232,7 @@ wp_enqueue_script('zendotech-account-js', get_template_directory_uri() . '/asset
                 <div class="ag-icon"><i class="fa-solid fa-truck-fast"></i></div>
                 <div>
                     <h4>Free Shipping</h4>
-                    <p>Free Shipping for orders over $75</p>
+                    <p><?php echo __( 'Free shipping available across Kenya', 'zendotech' ); ?></p>
                 </div>
             </div>
             <div class="ag-item">

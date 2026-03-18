@@ -185,7 +185,7 @@
        ------------------------------------------- */
     function initProductCart() {
         const addBtn = document.querySelector('.add-to-cart-btn, .single_add_to_cart_button');
-        const buyBtn = document.querySelector('.btn-buy-now');
+        const buyBtn = document.querySelector('.btn-buy-now, .buy-now-btn');
         if (!addBtn && !buyBtn) return;
 
         const getProductId = () => {
@@ -298,14 +298,65 @@
         if (buyBtn) {
             buyBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                wcAddToCart(buyBtn, () => {
-                    // Redirect to checkout after successful add
-                    const checkoutUrl = (typeof zendotechData !== 'undefined' && zendotechData.checkoutUrl)
-                        ? zendotechData.checkoutUrl
-                        : '/checkout/';
-                    setTimeout(() => {
-                        window.location.href = checkoutUrl;
-                    }, 500);
+        
+                const productId = getProductId();
+                const quantity  = getQuantity();
+                const Toast     = getToast();
+        
+                if (!productId) {
+                    if (Toast) Toast.show('Product not found.', 'error');
+                    return;
+                }
+        
+                if (typeof jQuery === 'undefined' || typeof zendotechData === 'undefined') {
+                    window.location.href = (typeof zendotechData !== 'undefined' && zendotechData.checkoutUrl)
+                        ? zendotechData.checkoutUrl : '/checkout/';
+                    return;
+                }
+        
+                const origHTML = buyBtn.innerHTML;
+                buyBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Please wait...';
+                buyBtn.style.pointerEvents = 'none';
+        
+                let dataPayload = {
+                    action:     'zendotech_add_to_cart',
+                    product_id: productId,
+                    quantity:   quantity,
+                    nonce:      zendotechData.nonce
+                };
+        
+                // Include variation data for variable products
+                const form = buyBtn.closest('form.woocommerce-cart-form');
+                if (form) {
+                    const formData = new FormData(form);
+                    for (let [key, value] of formData.entries()) {
+                        if (key !== 'action' && key !== 'add-to-cart') {
+                            dataPayload[key] = value;
+                        }
+                    }
+                }
+        
+                jQuery.ajax({
+                    url:     zendotechData.ajaxUrl,
+                    type:    'POST',
+                    data:    dataPayload,
+                    success: function (response) {
+                        if (response && response.success) {
+                            // Added to cart — redirect straight to checkout
+                            window.location.href = zendotechData.checkoutUrl || '/checkout/';
+                        } else {
+                            buyBtn.innerHTML = origHTML;
+                            buyBtn.style.pointerEvents = '';
+                            const msg = (response && response.data && response.data.message)
+                                ? response.data.message : 'Could not process. Please try again.';
+                            if (Toast) Toast.show(msg, 'error');
+                        }
+                    },
+                    error: function () {
+                        buyBtn.innerHTML = origHTML;
+                        buyBtn.style.pointerEvents = '';
+                        if (Toast) Toast.show('Connection error. Please try again.', 'error');
+                    }
                 });
             });
         }

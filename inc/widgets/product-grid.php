@@ -123,6 +123,14 @@ class Zendotech_Product_Grid_Widget extends \Elementor\Widget_Base {
 			'type'    => \Elementor\Controls_Manager::SWITCHER,
 			'default' => '',
 		] );
+		$this->add_control( 'show_slider', [
+			'label'        => __( 'Display As Slider', 'zendotech' ),
+			'type'         => \Elementor\Controls_Manager::SWITCHER,
+			'label_on'     => __( 'Yes', 'zendotech' ),
+			'label_off'    => __( 'No', 'zendotech' ),
+			'return_value' => 'yes',
+			'default'      => '',
+		] );
 
 		$this->end_controls_section();
 
@@ -238,13 +246,15 @@ class Zendotech_Product_Grid_Widget extends \Elementor\Widget_Base {
 		$s        = $this->get_settings_for_display();
 		$shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '#';
 		$columns  = ! empty( $s['grid_columns'] ) ? intval( $s['grid_columns'] ) : 5;
+		$slider_enabled = isset( $s['show_slider'] ) && $s['show_slider'] === 'yes';
+		$section_id     = 'zendotech-grid-' . $this->get_id();
 
 		if ( ! function_exists( 'wc_get_products' ) ) {
 			echo '<p>' . __( 'WooCommerce is required for this widget.', 'zendotech' ) . '</p>';
 			return;
 		}
 		?>
-		<section class="products-section product-grid-wrap">
+		<section class="products-section product-grid-wrap" id="<?php echo esc_attr( $section_id ); ?>">
 			<div class="container">
 				<div class="section-head">
 					<div class="sh-left">
@@ -285,13 +295,143 @@ class Zendotech_Product_Grid_Widget extends \Elementor\Widget_Base {
 					</div>
 				<?php endif; ?>
 
-				<div class="products-row" style="grid-template-columns: repeat(<?php echo esc_attr( $columns ); ?>, 1fr);">
-					<?php $this->render_products( $s ); ?>
-				</div>
+				<?php
+				$row_classes = 'products-row';
+				$row_attr    = 'style="grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr);"';
+				if ( $slider_enabled ) {
+					$row_classes .= ' products-row--slider';
+					$row_attr    = 'data-slider-columns="' . esc_attr( $columns ) . '"';
+				}
+				?>
+				<?php if ( $slider_enabled ) : ?>
+					<div class="product-grid-slider" id="<?php echo esc_attr( $section_id . '-slider' ); ?>">
+						<button type="button" class="grid-slider-btn grid-slider-prev" aria-label="<?php esc_attr_e( 'Previous slide', 'zendotech' ); ?>">
+							<i class="fa-solid fa-chevron-left"></i>
+						</button>
+				<?php endif; ?>
+
+						<div class="<?php echo esc_attr( $row_classes ); ?>" <?php echo $row_attr; ?>>
+							<?php $this->render_products( $s ); ?>
+						</div>
+
+				<?php if ( $slider_enabled ) : ?>
+						<button type="button" class="grid-slider-btn grid-slider-next" aria-label="<?php esc_attr_e( 'Next slide', 'zendotech' ); ?>">
+							<i class="fa-solid fa-chevron-right"></i>
+						</button>
+					</div>
+				<?php endif; ?>
 			</div>
 		</section>
 
-		<?php if ( $s['show_tab_filters'] === 'yes' ) :
+		<?php if ( $slider_enabled ) :
+			static $grid_slider_styles_output = false;
+			if ( ! $grid_slider_styles_output ) {
+				$grid_slider_styles_output = true;
+				?>
+				<style>
+				.product-grid-slider {
+					display:flex;
+					align-items:center;
+					gap:12px;
+					position:relative;
+				}
+				.product-grid-slider .grid-slider-btn {
+					width:44px;
+					height:44px;
+					border-radius:50%;
+					border:1px solid rgba(21,26,148,.15);
+					background:#fff;
+					color:#151a94;
+					display:flex;
+					align-items:center;
+					justify-content:center;
+					cursor:pointer;
+					box-shadow:0 10px 20px rgba(21,26,148,.15);
+					transition:transform .25s ease, box-shadow .25s ease;
+				}
+				.product-grid-slider .grid-slider-btn:disabled {
+					opacity:.4;
+					cursor:not-allowed;
+				}
+				.product-grid-slider .grid-slider-btn:not(:disabled):hover {
+					transform:translateY(-2px);
+					box-shadow:0 14px 24px rgba(21,26,148,.2);
+				}
+				.products-row--slider {
+					display:flex;
+					flex-wrap:nowrap;
+					gap:18px;
+					overflow-x:hidden;
+					scroll-behavior:smooth;
+					-webkit-overflow-scrolling:touch;
+					padding-bottom:10px;
+					flex:1;
+				}
+				.products-row--slider > * {
+					scroll-snap-align:start;
+				}
+				</style>
+				<?php
+			}
+			$slider_wrapper_id = $section_id . '-slider';
+			?>
+			<script>
+			(function(){
+				var slider = document.getElementById('<?php echo esc_js( $slider_wrapper_id ); ?>');
+				if (!slider) return;
+
+				var track = slider.querySelector('.products-row--slider');
+				if (!track) return;
+
+				var cards = track.children;
+				var prevBtn = slider.querySelector('.grid-slider-prev');
+				var nextBtn = slider.querySelector('.grid-slider-next');
+				var columns = parseInt(track.getAttribute('data-slider-columns'), 10) || 1;
+
+				function getGap() {
+					var styles = window.getComputedStyle(track);
+					return parseFloat(styles.gap) || 18;
+				}
+
+				function updateCardSizes() {
+					if (!cards.length) return;
+					var visible = Math.min(columns, cards.length);
+					var trackWidth = track.clientWidth;
+					var gap = getGap();
+					var cardWidth = Math.floor( ( trackWidth - ( visible - 1 ) * gap ) / visible );
+					cardWidth = Math.max(cardWidth, 180);
+					Array.prototype.forEach.call(cards, function(card){
+						card.style.flex = '0 0 ' + cardWidth + 'px';
+						card.style.maxWidth = cardWidth + 'px';
+					});
+				}
+
+				function updateNavState() {
+					if (!prevBtn || !nextBtn) return;
+					prevBtn.disabled = track.scrollLeft <= 0;
+					nextBtn.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+				}
+
+				function scrollByPage(direction) {
+					track.scrollBy({ left: direction * track.clientWidth, behavior: 'smooth' });
+				}
+
+				window.addEventListener('resize', function(){
+					updateCardSizes();
+					updateNavState();
+				});
+
+				if (prevBtn) prevBtn.addEventListener('click', function(){ scrollByPage(-1); });
+				if (nextBtn) nextBtn.addEventListener('click', function(){ scrollByPage(1); });
+				track.addEventListener('scroll', updateNavState);
+
+				updateCardSizes();
+				updateNavState();
+			})();
+			</script>
+		<?php endif; ?>
+
+	<?php if ( $s['show_tab_filters'] === 'yes' ) :
 			$uid = esc_js( $this->get_id() );
 		?>
 		<script>

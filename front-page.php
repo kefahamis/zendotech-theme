@@ -458,7 +458,7 @@
                         <div class="feat-icon"><i class="fa-solid fa-truck-fast"></i></div>
                         <div>
                             <h4>Free Shipping</h4>
-                            <p>On orders over $75</p>
+                            <p><?php echo __( 'Free shipping available across Kenya', 'zendotech' ); ?></p>
                         </div>
                     </div>
                     <div class="feat-item">
@@ -471,7 +471,7 @@
                     <div class="feat-item">
                         <div class="feat-icon"><i class="fa-solid fa-shield-halved"></i></div>
                         <div>
-                            <h4>2-Year Warranty</h4>
+                            <h4>1-Year Warranty</h4>
                             <p>On all audio products</p>
                         </div>
                     </div>

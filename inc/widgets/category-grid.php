@@ -127,7 +127,7 @@ class Zendotech_Category_Grid_Widget extends \Elementor\Widget_Base {
 		</section>
 		<style>
 		#<?php echo esc_html( $grid_id ); ?> .zct-slider-wrap { position:relative; background:#fff; border-radius:36px; box-shadow:0 20px 45px rgba(10,12,40,.15); padding:24px 32px 20px; margin-top:30px; overflow:hidden; }
-		#<?php echo esc_html( $grid_id ); ?> .zct-slider { display:flex; gap:28px; overflow-x:auto; scroll-behavior:smooth; padding:8px 12px 0; }
+		#<?php echo esc_html( $grid_id ); ?> .zct-slider { display:flex; gap:28px; overflow-x:hidden; scroll-behavior:smooth; padding:8px 12px 0; }
 		#<?php echo esc_html( $grid_id ); ?> .zct-slider::-webkit-scrollbar { display:none; }
 		#<?php echo esc_html( $grid_id ); ?> .cat-card { display:flex; flex-direction:column; align-items:center; gap:12px; min-width:150px; text-decoration:none; color:#1a1b29; font-weight:600; text-align:center; }
 		#<?php echo esc_html( $grid_id ); ?> .cat-icon { width:120px; height:120px; border-radius:50%; border:1px solid rgba(15,21,38,.08); display:flex; align-items:center; justify-content:center; background:#fafafa; box-shadow:0 18px 30px rgba(15,21,38,.08); transition:all .35s ease; }

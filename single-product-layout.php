@@ -102,16 +102,18 @@ get_header();
                     </div>
                 </div>
 
+                <?php
+                $buying_url = function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : get_permalink(get_page_by_path('checkout'));
+                ?>
                 <div class="pi-actions">
                     <a href="<?php echo esc_url(get_permalink(get_page_by_path('cart'))); ?>" class="add-to-cart-btn"><i
                             class="fa-solid fa-cart-shopping"></i> Add to Cart</a>
-                    <a href="<?php echo esc_url(get_permalink(get_page_by_path('checkout'))); ?>"
-                        class="buy-now-btn">Buy It Now</a>
+                    <a href="<?php echo esc_url($buying_url); ?>" class="buy-now-btn">Buy It Now</a>
                 </div>
 
                 <div class="pi-extras">
                     <div class="extra-item"><i class="fa-solid fa-truck"></i> Free Shipping</div>
-                    <div class="extra-item"><i class="fa-solid fa-shield-halved"></i> 2 Year Warranty</div>
+                    <div class="extra-item"><i class="fa-solid fa-shield-halved"></i> 1-Year Warranty</div>
                     <div class="extra-item"><i class="fa-solid fa-rotate-left"></i> 30-Day Returns</div>
                 </div>
             </div>
