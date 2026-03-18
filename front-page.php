@@ -355,7 +355,8 @@
         <section class="section pt-0">
             <div class="container">
                 <div class="tri-grid">
-                    <div class="tri-card tri-pink">
+                    <div class="tri-card tri-pink" role="link" tabindex="0"
+                        data-link="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">
                         <div class="tri-info"><span>Best Sellers</span>
                             <h3>Wireless Earbuds</h3><a
                                 href="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">Shop
@@ -364,7 +365,8 @@
                         <img src="https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=200&h=200&fit=crop"
                             alt="Earbuds">
                     </div>
-                    <div class="tri-card tri-gold">
+                    <div class="tri-card tri-gold" role="link" tabindex="0"
+                        data-link="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">
                         <div class="tri-info"><span>Top Rated</span>
                             <h3>Vinyl & Records</h3><a
                                 href="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">Shop
@@ -373,7 +375,8 @@
                         <img src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=200&h=200&fit=crop"
                             alt="Vinyl Records">
                     </div>
-                    <div class="tri-card tri-cyan">
+                    <div class="tri-card tri-cyan" role="link" tabindex="0"
+                        data-link="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">
                         <div class="tri-info"><span>New Arrivals</span>
                             <h3>DJ Equipment</h3><a
                                 href="<?php echo function_exists('wc_get_page_permalink') ? esc_url(wc_get_page_permalink('shop')) : '#'; ?>">Shop
@@ -385,6 +388,7 @@
                 </div>
             </div>
         </section>
+
 
         <!-- New Arrivals -->
         <section class="section new-arrivals-section">

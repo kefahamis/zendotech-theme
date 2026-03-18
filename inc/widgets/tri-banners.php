@@ -133,8 +133,12 @@ class Zendotech_Tri_Banners_Widget extends \Elementor\Widget_Base {
 						}
 
 						$link_url = ! empty( $card['link_url']['url'] ) ? $card['link_url']['url'] : '#';
+						$link_attr = '';
+						if ( $link_url ) {
+							$link_attr = ' role="link" tabindex="0" data-link="' . esc_url( $link_url ) . '"';
+						}
 						?>
-						<div class="<?php echo esc_attr( $classes ); ?>"<?php if ( $bg_style ) echo ' style="' . esc_attr( $bg_style ) . '"'; ?>>
+						<div class="<?php echo esc_attr( $classes ); ?>"<?php if ( $bg_style ) echo ' style="' . esc_attr( $bg_style ) . '"'; ?><?php echo $link_attr; ?>>
 							<div class="tri-info">
 								<span><?php echo esc_html( $card['tag'] ); ?></span>
 								<h3><?php echo esc_html( $card['title'] ); ?></h3>

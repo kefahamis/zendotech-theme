@@ -669,8 +669,9 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
 
                 $total_pages = max(1, (int) ceil($total / $per_page));
 
-                    $shop_page_link = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_permalink();
-                    $permalink = '';
+                $shop_page_id   = function_exists('wc_get_page_id') ? wc_get_page_id('shop') : 0;
+                $shop_page_link = $shop_page_id ? get_permalink($shop_page_id) : home_url('/shop/');
+                $permalink = '';
                     if ($is_category && isset($current_cat->term_id)) {
                         $permalink = get_term_link($current_cat);
                         if (is_wp_error($permalink)) {
@@ -931,45 +932,54 @@ $end = $total > 0 ? min($paged * $per_page, $total) : 0;
     // Mobile filter sidebar toggle
 
     const filterToggle = document.getElementById('filterToggle');
-
     const sidebar = document.getElementById('shopSidebar');
-
     const sidebarClose = document.getElementById('sidebarClose');
-
     const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const body = document.body;
+    let lastFocusedElement = null;
 
 
+    const setSidebarState = (isOpen) => {
+        if (!sidebar) return;
+        sidebar.classList.toggle('open', isOpen);
+        sidebar.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        if (filterToggle) {
+            filterToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.toggle('visible', isOpen);
+            sidebarOverlay.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        }
+        if (isOpen) {
+            lastFocusedElement = document.activeElement;
+            sidebar.setAttribute('tabindex', '-1');
+            sidebar.focus({ preventScroll: true });
+            body.style.overflow = 'hidden';
+        } else {
+            body.style.overflow = '';
+            sidebar.removeAttribute('tabindex');
+            if (lastFocusedElement) {
+                lastFocusedElement.focus({ preventScroll: true });
+            }
+        }
+    };
 
     if (filterToggle) {
-
-        filterToggle.addEventListener('click', () => {
-
-            sidebar.classList.add('open');
-
-            document.body.style.overflow = 'hidden';
-
-        });
-
+        filterToggle.setAttribute('aria-controls', 'shopSidebar');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterToggle.addEventListener('click', () => setSidebarState(true));
     }
 
-
-
-    function closeSidebar() {
-
-        sidebar.classList.remove('open');
-
-        document.body.style.overflow = '';
-
-    }
-
-
+    const closeSidebar = () => setSidebarState(false);
 
     if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-
     if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-
-
+    document.addEventListener('keyup', (event) => {
+        if (event.key === 'Escape') {
+            closeSidebar();
+        }
+    });
     // View switcher
 
     const viewBtns = document.querySelectorAll('.view-btn');

@@ -987,37 +987,114 @@
     }
 
     /* -------------------------------------------
-       13. COMPARE BUTTON — OVERLAY 
+       13. COMPARE BUTTON
        ------------------------------------------- */
     function initCompareButtons() {
+        const parsePriceValue = (value) => {
+            if (value == null) return 0;
+            const clean = String(value).replace(/[^0-9.]/g, '');
+            const parsed = parseFloat(clean);
+            return Number.isFinite(parsed) ? parsed : 0;
+        };
+
+        const normalizeCategoryText = (text) => {
+            if (!text) return '';
+            return text.replace(/Category:/i, '').trim();
+        };
+
+        const buildComparePayload = (trigger) => {
+            const dataset = trigger.dataset || {};
+            const payload = {
+                id: dataset.compareProductId || dataset.productId || dataset.id || '',
+                wcId: dataset.compareWcId || dataset.wcId || dataset.productId || '',
+                name: dataset.compareProductName || dataset.productName || dataset.name || '',
+                image: dataset.compareProductImage || dataset.productImage || dataset.image || '',
+                category: dataset.compareProductCategory || dataset.category || '',
+                rating: dataset.compareProductRating || dataset.rating || '',
+                oldPrice: dataset.compareProductOldPrice || dataset.oldPrice || '',
+            };
+
+            let priceSource = dataset.compareProductPrice || dataset.productPrice || dataset.price || '';
+
+            const card = trigger.closest('.product-card');
+            if (card) {
+                if (!payload.id) {
+                    payload.id = card.dataset.productId || card.getAttribute('data-product-id') || '';
+                }
+                if (!payload.wcId) {
+                    payload.wcId = card.dataset.productId || card.getAttribute('data-product-id') || '';
+                }
+                if (!payload.name) {
+                    payload.name = card.querySelector('h4 a')?.textContent?.trim() || '';
+                }
+                if (!payload.category) {
+                    payload.category = card.querySelector('.pc-cat')?.textContent?.trim() || '';
+                }
+                if (!payload.image) {
+                    payload.image = card.querySelector('.pc-img img')?.src || '';
+                }
+                if (!payload.rating) {
+                    const ratingEl = card.querySelector('.pc-stars span');
+                    payload.rating = ratingEl ? ratingEl.textContent.trim() : '';
+                }
+                if (!payload.oldPrice) {
+                    payload.oldPrice = card.querySelector('.old-price')?.textContent?.trim() || '';
+                }
+                priceSource = priceSource || card.querySelector('.new-price')?.textContent?.trim() || '';
+            }
+
+            const quickViewGrid = trigger.closest('.qv-grid');
+            if (quickViewGrid) {
+                const quickViewBtn = quickViewGrid.querySelector('.qv-add-btn');
+                if (!payload.id) {
+                    payload.id = quickViewBtn?.dataset.productId || '';
+                }
+                if (!payload.wcId) {
+                    payload.wcId = quickViewBtn?.dataset.productId || '';
+                }
+                if (!payload.name) {
+                    payload.name = quickViewGrid.querySelector('.qv-title')?.textContent?.trim() || '';
+                }
+                if (!payload.category) {
+                    payload.category = normalizeCategoryText(quickViewGrid.querySelector('.qv-meta-bottom span')?.textContent || '');
+                }
+                if (!payload.image) {
+                    payload.image = quickViewGrid.querySelector('#qvMainImg')?.src || '';
+                }
+                if (!payload.rating) {
+                    payload.rating = quickViewGrid.querySelector('.qv-review-count')?.textContent?.trim() || '';
+                }
+                priceSource = priceSource || quickViewGrid.querySelector('.qv-price-large')?.textContent?.trim() || '';
+                if (!payload.oldPrice) {
+                    payload.oldPrice = quickViewGrid.querySelector('.qv-price-large + .qv-desc')?.textContent?.trim() || '';
+                }
+            }
+
+            payload.price = parsePriceValue(priceSource);
+            if (!payload.wcId && payload.id) {
+                payload.wcId = payload.id;
+            }
+
+            if (!payload.id || !payload.name) {
+                return null;
+            }
+
+            payload.id = String(payload.id);
+            return payload;
+        };
+
         document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.pc-overlay button');
+            const btn = e.target.closest('.pc-compare-btn, .qv-compare-btn, .zendotech-compare-btn');
             if (!btn) return;
+            if (btn.tagName === 'A') {
+                e.preventDefault();
+            }
 
-            // Robust check for compare button (title, icon, or position)
-            const isCompare = btn.title === 'Compare' ||
-                btn.querySelector('.fa-arrow-right-arrow-left') ||
-                btn.matches(':last-child');
+            const product = buildComparePayload(btn);
+            if (!product) return;
 
-            if (!isCompare) return;
-
-            const compareBtn = btn;
-            const card = compareBtn.closest('.product-card');
-            if (!card) return;
-
-            const name = card.querySelector('h4 a')?.textContent?.trim() || 'Product';
-            const priceText = card.querySelector('.new-price')?.textContent?.trim() || '$0';
-            const price = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
-            const oldPriceText = card.querySelector('.old-price')?.textContent?.trim() || '';
-            const image = card.querySelector('.pc-img img')?.src || '';
-            const category = card.querySelector('.pc-cat')?.textContent?.trim() || '';
-            const ratingEl = card.querySelector('.pc-stars span');
-            const rating = ratingEl ? ratingEl.textContent.trim() : '';
-            const id = name.toLowerCase().replace(/\s+/g, '-');
-            const wcId = card.dataset.productId || ''; // Real WooCommerce product ID
-
-            const added = CompareStore.toggle({ id, wcId, name, price, image, category, rating, oldPrice: oldPriceText });
-            const icon = compareBtn.querySelector('i');
+            const added = CompareStore.toggle(product);
+            const icon = btn.querySelector('i');
             if (icon) {
                 icon.style.color = added ? 'var(--cta)' : '';
             }
@@ -1477,7 +1554,32 @@
     }
 
     /* -------------------------------------------
-       15. HERO SLIDER
+       15. TRI BANNERS CLICK TARGET (global)
+       ------------------------------------------- */
+    function initTriBanners() {
+        const cards = document.querySelectorAll('.tri-card[data-link]');
+        if (!cards.length) return;
+
+        cards.forEach(card => {
+            const navigate = () => {
+                const url = card.dataset.link;
+                if (url) {
+                    window.location.href = url;
+                }
+            };
+
+            card.addEventListener('click', navigate);
+            card.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigate();
+                }
+            });
+        });
+    }
+
+    /* -------------------------------------------
+       16. HERO SLIDER
        ------------------------------------------- */
     function initHeroSlider() {
         if (typeof Swiper === 'undefined') {
@@ -1779,6 +1881,7 @@
         initHomeSidebarLimit();
         initSearchBar();
         initNewsletter();
+        initTriBanners();
         initBackToTop();
         initCountdown();
         initAddToCartButtons();

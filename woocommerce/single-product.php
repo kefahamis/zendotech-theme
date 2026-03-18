@@ -42,6 +42,10 @@ while (have_posts()):
     $flash_hours = floor($flash_remaining / 3600);
     $flash_minutes = floor(($flash_remaining % 3600) / 60);
     $flash_seconds = $flash_remaining % 60;
+    $compare_price_value = function_exists('wc_get_price_to_display') ? wc_get_price_to_display($product) : (float)$product->get_price();
+    $compare_category_text = $first_cat_name ?: $cat_plain;
+    $compare_old_price = ($on_sale && $regular_price) ? wp_strip_all_tags(wc_price($regular_price)) : '';
+    $compare_rating = $rating > 0 ? number_format($rating, 1) : '';
     $minimum_sale_badge_pct = 5;
     $show_sale_badge = $sale_percent >= $minimum_sale_badge_pct;
 
@@ -217,11 +221,15 @@ while (have_posts()):
                         $wa_text = rawurlencode('Hi, I would like more information about ' . get_the_title() . ' - ' . get_permalink());
                         ?>
                         <a href="https://wa.me/?text=<?php echo $wa_text; ?>" target="_blank" class="pia-link"><i class="fa-brands fa-whatsapp"></i> Request Information</a>
-                        <a href="#" class="pia-link zendotech-compare-btn" 
+                        <a href="#" class="pia-link zendotech-compare-btn"
                            data-product-id="<?php echo esc_attr($product_id); ?>"
+                           data-wc-id="<?php echo esc_attr($product_id); ?>"
                            data-product-name="<?php echo esc_attr(get_the_title()); ?>"
-                           data-product-price="<?php echo esc_attr(strip_tags($product->get_price_html())); ?>"
-                           data-product-image="<?php echo esc_attr($main_image); ?>">
+                           data-product-price="<?php echo esc_attr($compare_price_value !== '' ? $compare_price_value : 0); ?>"
+                           data-product-image="<?php echo esc_attr($main_image); ?>"
+                           data-product-category="<?php echo esc_attr($compare_category_text); ?>"
+                           <?php if ($compare_old_price): ?>data-product-old-price="<?php echo esc_attr($compare_old_price); ?>"<?php endif; ?>
+                           <?php if ($compare_rating): ?>data-product-rating="<?php echo esc_attr($compare_rating); ?>"<?php endif; ?>>
                            <i class="fa-solid fa-shuffle"></i> Compare
                         </a>
                         <?php if ($sku): ?>

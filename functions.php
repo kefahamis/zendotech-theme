@@ -367,6 +367,11 @@ function zendotech_product_card($product)
     $categories = wc_get_product_category_list($id, ', ');
     $cat_names = wp_strip_all_tags($categories);
     $first_cat = explode(',', $cat_names)[0];
+    $compare_price_value = function_exists('wc_get_price_to_display') ? wc_get_price_to_display($product) : (float)$product->get_price();
+    $compare_category = $first_cat ?: '';
+    $compare_rating = $rating > 0 ? number_format($rating, 1) : '';
+    $regular_price = $product->get_regular_price();
+    $compare_old_price = ($on_sale && $regular_price) ? wp_strip_all_tags(wc_price($regular_price)) : '';
 
     // Sale percentage
     $sale_pct = '';
@@ -391,7 +396,17 @@ function zendotech_product_card($product)
                 <button title="Wishlist"><i class="fa-regular fa-heart"></i></button>
                 <button title="Quick View" data-product-url="<?php echo esc_url($permalink); ?>"><i
                         class="fa-regular fa-eye"></i></button>
-                <button title="Compare"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                <button title="Compare" class="pc-compare-btn"
+                    data-compare-product-id="<?php echo esc_attr($id); ?>"
+                    data-compare-product-name="<?php echo esc_attr($name); ?>"
+                    data-compare-product-price="<?php echo esc_attr($compare_price_value !== '' ? $compare_price_value : 0); ?>"
+                    data-compare-product-image="<?php echo esc_attr($image); ?>"
+                    data-compare-product-category="<?php echo esc_attr($compare_category); ?>"
+                    data-compare-wc-id="<?php echo esc_attr($id); ?>"
+                    <?php if ($compare_old_price): ?>data-compare-product-old-price="<?php echo esc_attr($compare_old_price); ?>"<?php endif; ?>
+                    <?php if ($compare_rating): ?>data-compare-product-rating="<?php echo esc_attr($compare_rating); ?>"<?php endif; ?>>
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </button>
             </div>
         </div>
         <div class="pc-body">
@@ -833,7 +848,8 @@ function zendotech_ajax_quick_view()
     $sku = $product->get_sku() ?: 'N/A';
     $price_html = $product->get_price_html();
     $short_desc = $product->get_short_description();
-    $rating_html = wc_get_rating_html($product->get_average_rating());
+    $rating_value = $product->get_average_rating();
+    $rating_html = wc_get_rating_html($rating_value);
     $review_count = $product->get_review_count();
     $stock_status = $product->get_stock_status();
     $stock_label = ($stock_status == 'instock') ? 'In Stock' : 'Out of Stock';
@@ -847,6 +863,11 @@ function zendotech_ajax_quick_view()
     $main_url = $main_img_id ? wp_get_attachment_image_url($main_img_id, 'large') : wc_placeholder_img_src('large');
     $attachment_ids = $product->get_gallery_image_ids();
 
+    $category_plain = wp_strip_all_tags($categories);
+    $compare_category = $category_plain ? explode(',', $category_plain)[0] : '';
+    $compare_price_value = function_exists('wc_get_price_to_display') ? wc_get_price_to_display($product) : (float)$product->get_price();
+    $compare_old_price = ($product->is_on_sale() && $product->get_regular_price()) ? wp_strip_all_tags(wc_price($product->get_regular_price())) : '';
+    $compare_rating = $rating_value > 0 ? number_format($rating_value, 1) : '';
     $gallery = array();
     if ($main_url) {
         $gallery[] = $main_url;
@@ -923,8 +944,18 @@ function zendotech_ajax_quick_view()
 
             <div class="qv-extra-actions">
                 <button type="button" class="qv-wishlist-btn"><i class="fa-regular fa-heart"></i> Add to wishlist</button>
-                <button type="button" class="qv-compare-btn"><i class="fa-solid fa-arrow-right-arrow-left"></i>
-                    Compare</button>
+                <button type="button" class="qv-compare-btn"
+                    data-product-id="<?php echo esc_attr($product_id); ?>"
+                    data-product-name="<?php echo esc_attr($name); ?>"
+                    data-product-price="<?php echo esc_attr($compare_price_value !== '' ? $compare_price_value : 0); ?>"
+                    data-product-image="<?php echo esc_attr($main_url); ?>"
+                    data-product-category="<?php echo esc_attr($compare_category); ?>"
+                    data-wc-id="<?php echo esc_attr($product_id); ?>"
+                    <?php if ($compare_old_price): ?>data-product-old-price="<?php echo esc_attr($compare_old_price); ?>"<?php endif; ?>
+                    <?php if ($compare_rating): ?>data-product-rating="<?php echo esc_attr($compare_rating); ?>"<?php endif; ?>>
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    Compare
+                </button>
             </div>
 
             <div class="qv-info-box">
